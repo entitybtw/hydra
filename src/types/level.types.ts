@@ -188,10 +188,8 @@ export interface UserPreferences {
   hideClassicsBookmark?: boolean;
   classicsUseHeroLayout?: boolean;
   selfHostedApiUrl?: string | null;
-  selfHostedApiToken?: string | null; // master token — proves access to instance
-  selfHostedUserToken?: string | null; // user JWT — from login/register
-  steamPresenceEnabled?: boolean; // experimental
-  steamPresenceUserId?: number | null; // SteamID3 of the account to use
+  selfHostedApiToken?: string | null;      // master token — proves access to instance
+  selfHostedUserToken?: string | null;     // user JWT — from login/register
 }
 
 export interface ScreenState {
