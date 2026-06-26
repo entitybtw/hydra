@@ -8,9 +8,6 @@ import axios from "axios";
 import { fileTypeFromFile } from "file-type";
 
 export const patchUserProfile = async (updateProfile: UpdateProfileRequest) => {
-  if (HydraApi.isSelfHosted()) {
-    return HydraApi.patchOfficial<UserProfile>("/profile", updateProfile);
-  }
   return HydraApi.patch<UserProfile>("/profile", updateProfile);
 };
 
@@ -22,9 +19,7 @@ const uploadImage = async (
   const fileBuffer = fs.readFileSync(imagePath);
   const fileSizeInBytes = stat.size;
 
-  const postFn = HydraApi.isSelfHosted()
-    ? HydraApi.postOfficial.bind(HydraApi)
-    : HydraApi.post.bind(HydraApi);
+  const postFn = HydraApi.post.bind(HydraApi);
 
   const response = await postFn<{ presignedUrl: string }>(
     `/presigned-urls/${type}`,
