@@ -702,6 +702,7 @@ contextBridge.exposeInMainWorld("electron", {
     ipcRenderer.invoke("deleteSteamShortcut", shop, objectId),
   checkSteamShortcut: (shop: GameShop, objectId: string) =>
     ipcRenderer.invoke("checkSteamShortcut", shop, objectId),
+  getSteamUserAccounts: () => ipcRenderer.invoke("getSteamUserAccounts"),
   getGamesRunning: () => ipcRenderer.invoke("getGamesRunning"),
   onGamesRunning: (
     cb: (
@@ -1063,8 +1064,10 @@ contextBridge.exposeInMainWorld("electron", {
   /* Auth */
   getAuth: () => ipcRenderer.invoke("getAuth"),
   signOut: () => ipcRenderer.invoke("signOut"),
-  selfHostedSignIn: (userToken: string) => ipcRenderer.invoke("selfHostedSignIn", userToken),
-  importFromHydraCloud: (officialToken: string) => ipcRenderer.invoke("importFromHydraCloud", officialToken),
+  selfHostedSignIn: (userToken: string) =>
+    ipcRenderer.invoke("selfHostedSignIn", userToken),
+  importFromHydraCloud: (officialToken: string) =>
+    ipcRenderer.invoke("importFromHydraCloud", officialToken),
   openHydraCloudImport: () => ipcRenderer.invoke("openHydraCloudImport"),
   getOfficialProfile: () => ipcRenderer.invoke("getOfficialProfile"),
   signInOfficial: () => ipcRenderer.invoke("signInOfficial"),

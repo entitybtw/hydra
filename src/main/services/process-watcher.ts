@@ -8,6 +8,7 @@ import { CloudSync } from "./cloud-sync";
 import { logger, networkLogger } from "./logger";
 import { PowerSaveBlockerManager } from "./power-save-blocker";
 import path from "node:path";
+import { setSteamGamePresence, clearSteamGamePresence } from "./steam-presence";
 import { AchievementWatcherManager } from "./achievements/achievement-watcher-manager";
 import { INTERVALS } from "@main/constants";
 import { Wine } from "./wine";
@@ -326,6 +327,17 @@ function onOpenGame(game: Game) {
       if (userPreferences?.hideToTrayOnGameStart) {
         WindowManager.mainWindow?.hide();
       }
+
+      if (
+        userPreferences?.steamPresenceEnabled &&
+        userPreferences.steamPresenceUserId &&
+        game.shop === "steam"
+      ) {
+        setSteamGamePresence(
+          userPreferences.steamPresenceUserId,
+          game.objectId
+        );
+      }
     })
     .catch(() => {});
 
@@ -473,6 +485,20 @@ const onCloseGame = (game: Game) => {
   gamesPlaytime.delete(gameKey);
   launchedGamePids.delete(gameKey);
   PowerSaveBlockerManager.markGameClosed(gameKey);
+
+  db.get<string, UserPreferences | null>(levelKeys.userPreferences, {
+    valueEncoding: "json",
+  })
+    .then((userPreferences) => {
+      if (
+        userPreferences?.steamPresenceEnabled &&
+        userPreferences.steamPresenceUserId &&
+        game.shop === "steam"
+      ) {
+        clearSteamGamePresence(userPreferences.steamPresenceUserId);
+      }
+    })
+    .catch(() => {});
 
   const delta = now - gamePlaytime.lastTick;
 

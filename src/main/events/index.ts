@@ -19,6 +19,7 @@ import "./themes";
 import "./torrenting";
 import "./user";
 import "./user-preferences";
+import "./steam";
 import "./library/transfer-game-files";
 import "./emulators";
 

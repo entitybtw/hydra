@@ -590,6 +590,9 @@ declare global {
     ) => Promise<void>;
     deleteSteamShortcut: (shop: GameShop, objectId: string) => Promise<void>;
     checkSteamShortcut: (shop: GameShop, objectId: string) => Promise<boolean>;
+    getSteamUserAccounts: () => Promise<
+      Array<{ steamUserId: number; steamId64: string; displayName: string }>
+    >;
 
     /* Download sources */
     addDownloadSource: (url: string) => Promise<DownloadSource>;
@@ -751,8 +754,13 @@ declare global {
     getAuth: () => Promise<Auth | null>;
     signOut: () => Promise<void>;
     selfHostedSignIn: (userToken: string) => Promise<void>;
-    importFromHydraCloud: (officialToken: string) => Promise<{ imported: number; achievements: number }>;
-    openHydraCloudImport: () => Promise<{ imported: number; achievements: number }>;
+    importFromHydraCloud: (
+      officialToken: string
+    ) => Promise<{ imported: number; achievements: number }>;
+    openHydraCloudImport: () => Promise<{
+      imported: number;
+      achievements: number;
+    }>;
     getOfficialProfile: () => Promise<any>;
     signInOfficial: () => Promise<void>;
     onOfficialSignIn: (cb: () => void) => () => void;
