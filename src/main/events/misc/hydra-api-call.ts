@@ -97,28 +97,3 @@ const hydraApiCall = async (
 
 registerEvent("hydraApiCall", hydraApiCall);
 
-        case "get": request = HydraApi.gameDataGet(url, params); break;
-        case "post": request = HydraApi.gameDataPost(url, data); break;
-        case "put": request = HydraApi.gameDataPut(url, data); break;
-        case "delete": request = HydraApi.gameDataDelete(url); break;
-        default: request = HydraApi.get(url, params, options);
-      }
-    } else {
-      switch (method) {
-        case "get": request = HydraApi.get(url, params, options); break;
-        case "post": request = HydraApi.post(url, data, options); break;
-        case "put": request = HydraApi.put(url, data, options); break;
-        case "patch": request = HydraApi.patch(url, data, options); break;
-        case "delete": request = HydraApi.delete(url, options); break;
-        default: throw new Error(`Unsupported HTTP method: ${method}`);
-      }
-    }
-
-    return await request;
-  } catch (error) {
-    const errorMessage = getErrorMessage(error);
-    throw new Error(errorMessage ?? "hydra-api-call-failed");
-  }
-};
-
-registerEvent("hydraApiCall", hydraApiCall);
