@@ -5,38 +5,43 @@
   <h1 align="center">Hydra Launcher</h1>
 
   <p align="center">
-    <strong>Fork of <a href="https://github.com/hydralauncher/hydra">hydralauncher/hydra</a> with self-hosted API support, dual accounts, and cloud save improvements.</strong>
+    <strong>Fork with self-hosted backend support — your own cloud saves, accounts and profiles.</strong>
   </p>
 
 ![Hydra Launcher Home Page](./docs/screenshot.png)
 
 </div>
 
-## Fork additions
+## What this fork adds
 
-- **Self-hosted API** — run your own backend for cloud saves, achievements, accounts and profiles: [entitybtw/hydra-selfhosted](https://github.com/entitybtw/hydra-selfhosted)
-- **Dual accounts** — use both an official Hydra account and a self-hosted account simultaneously; sidebar shows both profiles
-- **Web dashboard in-app** — Settings → Self-Hosted API → "Manage account" opens the self-hosted web dashboard inside the launcher window, auto-logging you in
-- **Profile editing via self-hosted** — Edit Profile, Update Password, and Manage Subscription all route to your self-hosted instance when connected
-- **Instant playtime updates** — changing playtime via Danger Zone updates the library immediately without a restart
-- **Game title sync** — correct game titles are synced to the self-hosted server as soon as they're resolved from Steam
-- **Cloud save restore improvements** — diff-based restore deletes stale save files not present in the backup
+This is a fork of [hydralauncher/hydra](https://github.com/hydralauncher/hydra) that adds support for a self-hosted backend via [entitybtw/hydra-selfhosted](https://github.com/entitybtw/hydra-selfhosted).
+
+With a self-hosted instance you get:
+
+- **Your own cloud saves** — save backups stored on your server, not Hydra Cloud
+- **Your own account** — register with a username and password on your server
+- **Public profile** — shareable profile page at `your-server/u/username` with playtime and game library
+- **Web dashboard** — manage your profile, Steam integration, accent color, and custom CSS from a browser or from inside the launcher
+- **Steam library sync** — connect your Steam account to pull playtime automatically
+- **No subscription** — everything works without a Hydra Cloud subscription
+
+You can use the self-hosted account alongside your official Hydra account at the same time — the sidebar shows both.
 
 ## Self-hosted setup
 
 1. Deploy [entitybtw/hydra-selfhosted](https://github.com/entitybtw/hydra-selfhosted) on your server
 2. In Hydra: **Settings → Self-Hosted API**
-3. Enter your server URL and `API_TOKEN`
-4. Click **Save** — a login/register window opens from your server's web UI
-5. Log in — the launcher connects and syncs your library automatically
+3. Enter your server URL and API token
+4. A login window opens — register or sign in
+5. Done — cloud saves and library sync to your server automatically
 
 ## Features
 
 - Add games to your library
 - Profile with friends, achievements, and playtime
-- Cloud saves via Hydra Cloud or self-hosted
+- Cloud saves (Hydra Cloud or self-hosted)
 - Achievements tracking
-- Rich game catalogue with suggestion algorithm
+- Rich game catalogue with suggestions
 
 ## Build from source
 
@@ -46,8 +51,6 @@ Requirements: Node.js, Python 3.9+, Rust toolchain
 npm install
 npm run build:linux   # or build:win / build:mac
 ```
-
-Packaging runs `build:python-rpc` and `build:native` automatically.
 
 ## Contributors
 
