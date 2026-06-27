@@ -1,4 +1,4 @@
-import { Avatar, Button, SelectField } from "@renderer/components";
+import { Avatar, Button, CheckboxField, SelectField, TextField } from "@renderer/components";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDate, useToast, useUserDetails } from "@renderer/hooks";
@@ -25,7 +25,7 @@ export function SettingsAccount() {
 
   const { showSuccessToast } = useToast();
 
-  const { blockedUsers, fetchBlockedUsers } = useContext(settingsContext);
+  const { blockedUsers, fetchBlockedUsers, updateUserPreferences } = useContext(settingsContext);
 
   const { formatDate } = useDate();
 
@@ -49,7 +49,6 @@ export function SettingsAccount() {
   const selfHostedUrl = userPreferences?.selfHostedApiUrl;
   const selfHostedToken = userPreferences?.selfHostedApiToken;
   const isSelfHosted = Boolean(selfHostedUrl);
-  const selfHostedDashboard = selfHostedUrl ? `${selfHostedUrl}/?token=${encodeURIComponent(selfHostedToken ?? "")}` : "";
 
   useEffect(() => {
     if (userDetails?.profileVisibility) {
@@ -228,6 +227,31 @@ export function SettingsAccount() {
           <CloudIcon />
           {getHydraCloudSectionContent().callToAction}
         </Button>
+      </section>
+
+      <section className="settings-account__section">
+        <h3>Session</h3>
+        <CheckboxField
+          label="Sign out of official account when closing the app"
+          checked={Boolean(userPreferences?.signOutOnExit)}
+          onChange={(e) => updateUserPreferences({ signOutOnExit: e.target.checked })}
+        />
+        {isSelfHosted && (
+          <>
+            <CheckboxField
+              label="Sign out of self-hosted account when closing the app"
+              checked={Boolean(userPreferences?.selfHostedSignOutOnExit)}
+              onChange={(e) => updateUserPreferences({ selfHostedSignOutOnExit: e.target.checked })}
+            />
+            <TextField
+              label="Self-hosted session duration (days, 0 = never expire)"
+              type="number"
+              value={String(userPreferences?.selfHostedSessionDurationDays ?? 30)}
+              onChange={(e) => updateUserPreferences({ selfHostedSessionDurationDays: Math.max(0, parseInt(e.target.value) || 0) })}
+              style={{ maxWidth: "180px" }}
+            />
+          </>
+        )}
       </section>
 
       <section className="settings-account__section">

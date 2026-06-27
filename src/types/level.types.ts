@@ -190,6 +190,10 @@ export interface UserPreferences {
   selfHostedApiUrl?: string | null;
   selfHostedApiToken?: string | null;      // master token — proves access to instance
   selfHostedUserToken?: string | null;     // user JWT — from login/register
+  signOutOnExit?: boolean;
+  selfHostedSignOutOnExit?: boolean;
+  selfHostedTokenIssuedAt?: number;        // ms timestamp when token was issued
+  selfHostedSessionDurationDays?: number;  // 0 = never expire
 }
 
 export interface ScreenState {

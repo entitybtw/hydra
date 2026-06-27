@@ -333,10 +333,16 @@ export class HydraApi {
       userPreferences?.selfHostedApiUrl &&
       userPreferences?.selfHostedApiToken
     ) {
+      // Check if self-hosted session has expired
+      const durationDays = userPreferences.selfHostedSessionDurationDays ?? 30;
+      const issuedAt = userPreferences.selfHostedTokenIssuedAt ?? 0;
+      const expired = durationDays > 0 && issuedAt > 0 &&
+        Date.now() - issuedAt > durationDays * 24 * 60 * 60 * 1000;
+
       this.setSelfHostedConfig(
         userPreferences.selfHostedApiUrl,
         userPreferences.selfHostedApiToken,
-        userPreferences.selfHostedUserToken
+        expired ? null : userPreferences.selfHostedUserToken
       );
     }
 

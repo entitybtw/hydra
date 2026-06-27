@@ -22,6 +22,7 @@ With a self-hosted instance you get:
 - **Your own account** — register with a username and password on your server
 - **Public profile** — shareable profile page at `your-server/u/username` with playtime and game library
 - **Web dashboard** — manage your profile, accent color, and custom CSS from a browser or from inside the launcher
+- **Session control** — choose how long your session lasts and whether to sign out automatically when closing the app
 - **No subscription** — everything works without a Hydra Cloud subscription
 
 You can use the self-hosted account alongside your official Hydra account at the same time — the sidebar shows both.
