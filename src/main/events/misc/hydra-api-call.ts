@@ -41,6 +41,10 @@ const hydraApiCall = async (
       url.startsWith("/games/launchbox/")
     ) && !url.includes("/download-sources");
 
+    if (isGameDataUrl) {
+      console.log(`[gamedata] url=${url} flag=${HydraApi.useSelfHostedGameData}`);
+    }
+
     if (isCatalogueUrl && HydraApi.useSelfHostedCatalogue) {
       request = method === "post"
         ? HydraApi.cataloguePost(url, data)
