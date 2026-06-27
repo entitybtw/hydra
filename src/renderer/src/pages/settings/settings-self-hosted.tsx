@@ -9,7 +9,9 @@ export function SettingsSelfHosted() {
   const { updateUserPreferences } = useContext(settingsContext);
   const { showSuccessToast, showErrorToast } = useToast();
 
-  const userPreferences = useAppSelector((state) => state.userPreferences.value);
+  const userPreferences = useAppSelector(
+    (state) => state.userPreferences.value
+  );
 
   const [enabled, setEnabled] = useState(false);
   const [form, setForm] = useState({ url: "", token: "" });
@@ -17,7 +19,10 @@ export function SettingsSelfHosted() {
 
   useEffect(() => {
     if (userPreferences) {
-      setEnabled(Boolean(userPreferences.selfHostedApiUrl) && Boolean(userPreferences.selfHostedApiToken));
+      setEnabled(
+        Boolean(userPreferences.selfHostedApiUrl) &&
+          Boolean(userPreferences.selfHostedApiToken)
+      );
       setForm({
         url: userPreferences.selfHostedApiUrl ?? "",
         token: userPreferences.selfHostedApiToken ?? "",
@@ -29,7 +34,11 @@ export function SettingsSelfHosted() {
     const next = !enabled;
     setEnabled(next);
     if (!next) {
-      await updateUserPreferences({ selfHostedApiUrl: null, selfHostedApiToken: null, selfHostedUserToken: null });
+      await updateUserPreferences({
+        selfHostedApiUrl: null,
+        selfHostedApiToken: null,
+        selfHostedUserToken: null,
+      });
     }
   };
 
@@ -57,7 +66,9 @@ export function SettingsSelfHosted() {
     setImporting(true);
     try {
       const result = await window.electron.openHydraCloudImport();
-      showSuccessToast(`Imported ${result.imported} games, ${result.achievements} achievements`);
+      showSuccessToast(
+        `Imported ${result.imported} games, ${result.achievements} achievements`
+      );
     } catch (err: any) {
       if (err?.message !== "cancelled") showErrorToast("Import failed");
     } finally {
@@ -93,6 +104,15 @@ export function SettingsSelfHosted() {
               </Button>
             }
           />
+
+          <Button
+            type="button"
+            theme="outline"
+            onClick={() => window.electron.openExternal(`${form.url}/web/dashboard`)}
+            style={{ marginTop: "8px" }}
+          >
+            Change password / manage account
+          </Button>
 
           <Button
             type="button"
