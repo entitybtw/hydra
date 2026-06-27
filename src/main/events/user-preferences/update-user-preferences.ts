@@ -113,6 +113,9 @@ const updateUserPreferences = async (
   if (Object.hasOwn(preferences, "useSelfHostedCatalogue")) {
     HydraApi.useSelfHostedCatalogue = Boolean(updatedPreferences.useSelfHostedCatalogue) && Boolean(updatedPreferences.selfHostedApiUrl);
   }
+  if (Object.hasOwn(preferences, "useSelfHostedGameData")) {
+    HydraApi.useSelfHostedGameData = Boolean(updatedPreferences.useSelfHostedGameData) && Boolean(updatedPreferences.selfHostedApiUrl);
+  }
 };
 
 registerEvent("updateUserPreferences", updateUserPreferences);

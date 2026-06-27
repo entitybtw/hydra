@@ -115,9 +115,15 @@ export function SettingsSelfHosted() {
           </Button>
 
           <CheckboxField
-            label="Use self-hosted server for game catalogue (search, details, achievements)"
+            label="[Experimental] Use self-hosted server for game catalogue (search, details, genres)"
             checked={Boolean(userPreferences?.useSelfHostedCatalogue)}
             onChange={(e) => updateUserPreferences({ useSelfHostedCatalogue: e.target.checked })}
+          />
+
+          <CheckboxField
+            label="Use self-hosted server for reviews, HowLongToBeat & ProtonDB"
+            checked={Boolean(userPreferences?.useSelfHostedGameData)}
+            onChange={(e) => updateUserPreferences({ useSelfHostedGameData: e.target.checked })}
           />
 
           <Button

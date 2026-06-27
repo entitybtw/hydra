@@ -20,54 +20,43 @@ const hydraApiCall = async (
   const { method, url, data, params, options } = payload;
 
   const getErrorMessage = (error: unknown): string | null => {
-    if (error instanceof Error && error.message) {
-      return error.message;
-    }
-
+    if (error instanceof Error && error.message) return error.message;
     if (typeof error === "object" && error !== null) {
-      const response = (
-        error as { response?: { data?: { message?: unknown } } }
-      ).response;
-      const responseMessage = response?.data?.message;
-
-      if (typeof responseMessage === "string") {
-        return responseMessage;
-      }
+      const msg = (error as any).response?.data?.message;
+      if (typeof msg === "string") return msg;
     }
-
     return null;
   };
 
   try {
     let request: Promise<unknown>;
 
-    // Route catalogue requests to self-hosted if enabled
-    const isCatalogueUrl = (url === "/catalogue/search" || url === "/games/shop-details" || url.startsWith("/games/steam/") || url.startsWith("/games/launchbox/")) && !url.includes("/download-sources");
+    const isCatalogueUrl = (
+      url === "/catalogue/search" ||
+      url === "/games/shop-details" ||
+      url.startsWith("/games/steam/") ||
+      url.startsWith("/games/launchbox/")
+    ) && !url.includes("/download-sources");
+
+    const isGameDataUrl =
+      url.match(/^\/games\/[^/]+\/[^/]+\/(reviews|how-long-to-beat|protondb)/) !== null;
+
     if (isCatalogueUrl && HydraApi.useSelfHostedCatalogue) {
-      if (method === "post") {
-        request = HydraApi.cataloguePost(url, data);
-      } else {
-        request = HydraApi.catalogueGet(url, params);
-      }
+      request = method === "post"
+        ? HydraApi.cataloguePost(url, data)
+        : HydraApi.catalogueGet(url, params);
+    } else if (isGameDataUrl && HydraApi.useSelfHostedGameData) {
+      request = method === "post"
+        ? HydraApi.cataloguePost(url, data)
+        : HydraApi.catalogueGet(url, params);
     } else {
       switch (method) {
-        case "get":
-          request = HydraApi.get(url, params, options);
-          break;
-        case "post":
-          request = HydraApi.post(url, data, options);
-          break;
-        case "put":
-          request = HydraApi.put(url, data, options);
-          break;
-        case "patch":
-          request = HydraApi.patch(url, data, options);
-          break;
-        case "delete":
-          request = HydraApi.delete(url, options);
-          break;
-        default:
-          throw new Error(`Unsupported HTTP method: ${method}`);
+        case "get": request = HydraApi.get(url, params, options); break;
+        case "post": request = HydraApi.post(url, data, options); break;
+        case "put": request = HydraApi.put(url, data, options); break;
+        case "patch": request = HydraApi.patch(url, data, options); break;
+        case "delete": request = HydraApi.delete(url, options); break;
+        default: throw new Error(`Unsupported HTTP method: ${method}`);
       }
     }
 

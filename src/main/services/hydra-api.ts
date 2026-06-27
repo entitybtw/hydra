@@ -49,6 +49,7 @@ export class HydraApi {
   } | null = null;
 
   public static useSelfHostedCatalogue = false;
+  public static useSelfHostedGameData = false;
 
   public static setSelfHostedConfig(
     url: string,
@@ -367,6 +368,7 @@ export class HydraApi {
         expired ? null : userPreferences.selfHostedUserToken
       );
       this.useSelfHostedCatalogue = userPreferences.useSelfHostedCatalogue ?? false;
+      this.useSelfHostedGameData = userPreferences.useSelfHostedGameData ?? false;
     }
 
     this.userAuth = {
