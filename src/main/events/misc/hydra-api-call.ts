@@ -31,15 +31,15 @@ const hydraApiCall = async (
   try {
     let request: Promise<unknown>;
 
-    const isCatalogueUrl = (
+    const isGameDataUrl =
+      url.match(/^\/games\/[^/]+\/[^/]+\/(reviews|how-long-to-beat|protondb)/) !== null;
+
+    const isCatalogueUrl = !isGameDataUrl && (
       url === "/catalogue/search" ||
       url === "/games/shop-details" ||
       url.startsWith("/games/steam/") ||
       url.startsWith("/games/launchbox/")
     ) && !url.includes("/download-sources");
-
-    const isGameDataUrl =
-      url.match(/^\/games\/[^/]+\/[^/]+\/(reviews|how-long-to-beat|protondb)/) !== null;
 
     if (isCatalogueUrl && HydraApi.useSelfHostedCatalogue) {
       request = method === "post"
