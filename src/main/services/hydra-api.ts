@@ -135,6 +135,10 @@ export class HydraApi {
       .then((r) => r.data);
   }
 
+  public static getSelfHostedUrl(): string | null {
+    return this.selfHostedConfig?.url ?? null;
+  }
+
   private static readonly UUID_REGEX =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

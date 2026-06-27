@@ -1,5 +1,7 @@
 import { registerEvent } from "../register-event";
 import { HydraApi } from "@main/services";
+import { downloadSourcesSublevel } from "@main/level";
+import axios from "axios";
 
 interface HydraApiCallPayload {
   method: "get" | "post" | "put" | "patch" | "delete";
@@ -41,9 +43,20 @@ const hydraApiCall = async (
   try {
     let request: Promise<unknown>;
 
-    // Route catalogue requests to self-hosted if enabled
-    const isCatalogueUrl = (url === "/catalogue/search" || url === "/games/shop-details" || url.startsWith("/games/steam/") || url.startsWith("/games/launchbox/")) && !url.includes("/download-sources");
-    if (isCatalogueUrl && HydraApi.useSelfHostedCatalogue) {
+    const isDownloadSourcesUrl = url.includes("/download-sources") && method === "get";
+    const isCatalogueUrl = (url === "/catalogue/search" || url === "/games/shop-details" || url.startsWith("/games/steam/") || url.startsWith("/games/launchbox/")) && !isDownloadSourcesUrl;
+
+    if (isDownloadSourcesUrl && HydraApi.useSelfHostedCatalogue) {
+      const selfHostedUrl = HydraApi.getSelfHostedUrl();
+      if (selfHostedUrl) {
+        const sources = await downloadSourcesSublevel.values().all();
+        const sourceUrls = sources.map((s) => s.url);
+        request = axios.post(`${selfHostedUrl}${url}`, { sourceUrls }, { timeout: 15000 })
+          .then((r) => r.data);
+      } else {
+        request = HydraApi.get(url, params, options);
+      }
+    } else if (isCatalogueUrl && HydraApi.useSelfHostedCatalogue) {
       if (method === "post") {
         request = HydraApi.cataloguePost(url, data);
       } else {
