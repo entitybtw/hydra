@@ -182,10 +182,6 @@ export class HydraApi {
     }
     return this.officialInstance.delete<T>(url, { headers: this.officialAuthHeaders() }).then((r) => r.data);
   }
-    }
-    return this.officialInstance.get<T>(url, { headers: this.officialAuthHeaders(), params })
-      .then((r) => r.data);
-  }
 
   private static readonly UUID_REGEX =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
