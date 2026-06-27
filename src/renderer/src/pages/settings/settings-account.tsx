@@ -193,7 +193,7 @@ export function SettingsAccount() {
           <Button
             theme="outline"
             onClick={() => isSelfHosted
-              ? window.electron.openExternal(selfHostedDashboard)
+              ? window.electron.openSelfHostedDashboard()
               : window.electron.openAuthWindow(AuthPage.UpdateEmail)}
           >
             <MailIcon />
@@ -203,7 +203,7 @@ export function SettingsAccount() {
           <Button
             theme="outline"
             onClick={() => isSelfHosted
-              ? window.electron.openExternal(selfHostedDashboard)
+              ? window.electron.openSelfHostedDashboard()
               : window.electron.openAuthWindow(AuthPage.UpdatePassword)}
           >
             <KeyIcon />
@@ -222,7 +222,7 @@ export function SettingsAccount() {
           className="settings-account__subscription-button"
           theme="outline"
           onClick={() => isSelfHosted
-            ? window.electron.openExternal(selfHostedDashboard)
+            ? window.electron.openSelfHostedDashboard()
             : window.electron.openCheckout()}
         >
           <CloudIcon />

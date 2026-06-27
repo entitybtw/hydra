@@ -1064,6 +1064,7 @@ contextBridge.exposeInMainWorld("electron", {
   getAuth: () => ipcRenderer.invoke("getAuth"),
   signOut: () => ipcRenderer.invoke("signOut"),
   selfHostedSignIn: (userToken: string) => ipcRenderer.invoke("selfHostedSignIn", userToken),
+  openSelfHostedDashboard: () => ipcRenderer.invoke("openSelfHostedDashboard"),
   importFromHydraCloud: (officialToken: string) => ipcRenderer.invoke("importFromHydraCloud", officialToken),
   openHydraCloudImport: () => ipcRenderer.invoke("openHydraCloudImport"),
   getOfficialProfile: () => ipcRenderer.invoke("getOfficialProfile"),

@@ -5,3 +5,4 @@ import "./sign-out";
 import "./self-hosted-sign-in";
 import "./import-from-hydra-cloud";
 import "./official-profile";
+import "./open-self-hosted-dashboard";

@@ -589,6 +589,29 @@ export class WindowManager {
     this.bindAuthNavigation(authWindow.webContents, () => authWindow.close());
   }
 
+  public static openSelfHostedDashboard(baseUrl: string, userToken?: string | null) {
+    const parentWindow = this.mainWindow;
+    if (!parentWindow || parentWindow.isDestroyed()) return;
+
+    const win = new BrowserWindow({
+      width: 900,
+      height: 700,
+      backgroundColor: "#0d0d0d",
+      parent: parentWindow,
+      show: false,
+      webPreferences: { sandbox: true },
+    });
+
+    win.removeMenu();
+
+    const url = userToken
+      ? `${baseUrl}/web/auto-login?userToken=${encodeURIComponent(userToken)}`
+      : `${baseUrl}/`;
+
+    win.loadURL(url);
+    win.once("ready-to-show", () => win.show());
+  }
+
   private static openLinuxAuthWindow(
     parentWindow: Electron.BrowserWindow,
     authUrl: string

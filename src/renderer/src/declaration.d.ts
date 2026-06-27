@@ -751,6 +751,7 @@ declare global {
     getAuth: () => Promise<Auth | null>;
     signOut: () => Promise<void>;
     selfHostedSignIn: (userToken: string) => Promise<void>;
+    openSelfHostedDashboard: () => Promise<void>;
     importFromHydraCloud: (officialToken: string) => Promise<{ imported: number; achievements: number }>;
     openHydraCloudImport: () => Promise<{ imported: number; achievements: number }>;
     getOfficialProfile: () => Promise<any>;
