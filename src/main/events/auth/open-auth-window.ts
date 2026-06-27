@@ -12,7 +12,7 @@ const openAuthWindow = async (
 ) => {
   if (HydraApi.isSelfHosted()) {
     const prefs = await db.get<string, UserPreferences>(levelKeys.userPreferences, { valueEncoding: "json" }).catch(() => null);
-    WindowManager.openSelfHostedAuthWindow(prefs?.selfHostedApiUrl ?? undefined);
+    WindowManager.openSelfHostedAuthWindow(prefs?.selfHostedApiUrl ?? undefined, prefs?.selfHostedApiToken ?? undefined);
     return;
   }
 

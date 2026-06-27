@@ -1145,7 +1145,7 @@ export class WindowManager {
     }
   }
 
-  public static openSelfHostedAuthWindow(selfHostedUrl?: string) {
+  public static openSelfHostedAuthWindow(selfHostedUrl?: string, apiToken?: string) {
     const parentWindow = this.mainWindow;
     if (!parentWindow || parentWindow.isDestroyed()) return;
 
@@ -1169,7 +1169,9 @@ export class WindowManager {
     win.removeMenu();
 
     if (selfHostedUrl) {
-      win.loadURL(`${selfHostedUrl}/?launcher=1`);
+      const params = new URLSearchParams({ launcher: "1" });
+      if (apiToken) params.set("token", apiToken);
+      win.loadURL(`${selfHostedUrl}/?${params.toString()}`);
     } else {
       this.loadWindowURL(win, "self-hosted-auth");
     }
