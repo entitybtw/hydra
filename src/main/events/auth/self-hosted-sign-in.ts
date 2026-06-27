@@ -7,14 +7,17 @@ import { levelKeys } from "@main/level/sublevels";
 import type { UserPreferences } from "@types";
 import { logger } from "@main/services/logger";
 
-const selfHostedSignIn = async (
-  _event: Electron.IpcMainInvokeEvent,
+export const selfHostedSignIn = async (
+  _event: Electron.IpcMainInvokeEvent | null,
   userToken: string
 ) => {
   logger.log("selfHostedSignIn called, token length:", userToken?.length);
   HydraApi.setSelfHostedUserToken(userToken);
 
-  const prefs = await db.get<string, UserPreferences>(levelKeys.userPreferences, { valueEncoding: "json" });
+  const prefs = await db.get<string, UserPreferences>(
+    levelKeys.userPreferences,
+    { valueEncoding: "json" }
+  );
   await db.put<string, UserPreferences>(
     levelKeys.userPreferences,
     { ...prefs, selfHostedUserToken: userToken },

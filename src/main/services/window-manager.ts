@@ -1145,7 +1145,7 @@ export class WindowManager {
     }
   }
 
-  public static openSelfHostedAuthWindow() {
+  public static openSelfHostedAuthWindow(selfHostedUrl?: string) {
     const parentWindow = this.mainWindow;
     if (!parentWindow || parentWindow.isDestroyed()) return;
 
@@ -1167,11 +1167,27 @@ export class WindowManager {
 
     this.authWindow = win;
     win.removeMenu();
-    this.loadWindowURL(win, "self-hosted-auth");
+
+    if (selfHostedUrl) {
+      win.loadURL(`${selfHostedUrl}/?launcher=1`);
+    } else {
+      this.loadWindowURL(win, "self-hosted-auth");
+    }
+
     win.once("ready-to-show", () => win.show());
     win.once("closed", () => {
       this.authWindow = null;
       if (!parentWindow.isDestroyed()) parentWindow.focus();
     });
+
+    // Intercept redirect to hydra-self-hosted://token/<accessToken>
+    const handleToken = (_e: any, url: string) => {
+      if (!url.startsWith("hydra-self-hosted://token/")) return;
+      const token = url.replace("hydra-self-hosted://token/", "");
+      import("@main/events/auth/self-hosted-sign-in").then((m) => m.selfHostedSignIn(null, token)).catch(() => {});
+      win.close();
+    };
+    win.webContents.on("will-navigate", handleToken);
+    win.webContents.on("will-redirect", handleToken);
   }
 }
