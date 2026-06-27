@@ -44,7 +44,14 @@ const hydraApiCall = async (
     let request: Promise<unknown>;
 
     const isDownloadSourcesUrl = url.includes("/download-sources") && method === "get";
-    const isCatalogueUrl = (url === "/catalogue/search" || url === "/games/shop-details" || url.startsWith("/games/steam/") || url.startsWith("/games/launchbox/")) && !isDownloadSourcesUrl;
+    const isCatalogueUrl = !isDownloadSourcesUrl && (
+      url === "/catalogue/search" ||
+      url.startsWith("/catalogue/") ||
+      url === "/games/shop-details" ||
+      url.startsWith("/games/steam/") ||
+      url.startsWith("/games/launchbox/") ||
+      (url.match(/^\/games\/[^/]+\/[^/]+\/(reviews|how-long-to-beat|protondb)/) !== null)
+    );
 
     if (isDownloadSourcesUrl && HydraApi.useSelfHostedCatalogue) {
       const selfHostedUrl = HydraApi.getSelfHostedUrl();
