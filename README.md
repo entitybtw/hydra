@@ -8,43 +8,46 @@
     <strong>Fork of <a href="https://github.com/hydralauncher/hydra">hydralauncher/hydra</a> with self-hosted API support, dual accounts, and cloud save improvements.</strong>
   </p>
 
-[![build](https://img.shields.io/github/actions/workflow/status/hydralauncher/hydra/build.yml)](https://github.com/hydralauncher/hydra/actions)
-[![release](https://img.shields.io/github/package-json/v/hydralauncher/hydra)](https://github.com/hydralauncher/hydra/releases)
-[![chocolatey](https://img.shields.io/chocolatey/v/hydralauncher.svg)](https://community.chocolatey.org/packages/hydralauncher)
-
 ![Hydra Launcher Home Page](./docs/screenshot.png)
 
 </div>
 
 ## Fork additions
 
-- **Self-hosted API** — run your own backend for cloud saves, achievements and accounts: [entitybtw/hydra-selfhosted](https://github.com/entitybtw/hydra-selfhosted)
-- **Dual accounts** — use both official Hydra account and self-hosted simultaneously; sidebar shows both profiles
-- **Cloud save restore improvements** — diff-based restore deletes stale save files not present in backup (prevents old levels/slots persisting after restore)
-- **Official profile editing** — Edit Profile on the official account tab edits the official account, not the self-hosted one
+- **Self-hosted API** — run your own backend for cloud saves, achievements, accounts and profiles: [entitybtw/hydra-selfhosted](https://github.com/entitybtw/hydra-selfhosted)
+- **Dual accounts** — use both an official Hydra account and a self-hosted account simultaneously; sidebar shows both profiles
+- **Web dashboard in-app** — Settings → Self-Hosted API → "Manage account" opens the self-hosted web dashboard inside the launcher window, auto-logging you in
+- **Profile editing via self-hosted** — Edit Profile, Update Password, and Manage Subscription all route to your self-hosted instance when connected
+- **Instant playtime updates** — changing playtime via Danger Zone updates the library immediately without a restart
+- **Game title sync** — correct game titles are synced to the self-hosted server as soon as they're resolved from Steam
+- **Cloud save restore improvements** — diff-based restore deletes stale save files not present in the backup
+
+## Self-hosted setup
+
+1. Deploy [entitybtw/hydra-selfhosted](https://github.com/entitybtw/hydra-selfhosted) on your server
+2. In Hydra: **Settings → Self-Hosted API**
+3. Enter your server URL and `API_TOKEN`
+4. Click **Save** — a login/register window opens from your server's web UI
+5. Log in — the launcher connects and syncs your library automatically
 
 ## Features
 
-- Add games that you own to your library
-- Have a nice profile that shows what you are playing to your friends
-- Save your game progress in the cloud with Hydra Cloud
-- Unlock achievements
-- Navigate through a rich catalogue with a powerful suggestion algorithm
-- Discover new games that you haven't played before
+- Add games to your library
+- Profile with friends, achievements, and playtime
+- Cloud saves via Hydra Cloud or self-hosted
+- Achievements tracking
+- Rich game catalogue with suggestion algorithm
 
-## Build from source and contributing
+## Build from source
 
-Please, refer to our Documentation pages: [docs.hydralauncher.gg](https://docs.hydralauncher.gg/getting-started)
+Requirements: Node.js, Python 3.9+, Rust toolchain
 
-### Local development requirements
+```bash
+npm install
+npm run build:linux   # or build:win / build:mac
+```
 
-- Node.js + Yarn
-- Python 3.9+ with `pip install -r requirements.txt`
-- Rust toolchain (for `hydra-native`)
-
-After installing dependencies, `postinstall` now builds the Rust native addon automatically (`hydra-native/hydra-native.node`).
-
-Packaging scripts (`yarn build:win`, `yarn build:mac`, `yarn build:linux`, `yarn build:unpack`) now run `yarn build:python-rpc` automatically.
+Packaging runs `build:python-rpc` and `build:native` automatically.
 
 ## Contributors
 
@@ -54,4 +57,4 @@ Packaging scripts (`yarn build:win`, `yarn build:mac`, `yarn build:linux`, `yarn
 
 ## License
 
-Hydra is licensed under the [MIT License](LICENSE).
+[MIT License](LICENSE)
