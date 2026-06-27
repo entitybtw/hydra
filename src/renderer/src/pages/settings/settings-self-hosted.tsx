@@ -116,7 +116,7 @@ export function SettingsSelfHosted() {
 
           <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "8px" }}>
             <CheckboxField
-              label="[Experimental] Use self-hosted server for game catalogue (search, details, genres)"
+              label="[Experimental] Use Steam API for game catalogue (search, details, genres — no server needed)"
               checked={Boolean(userPreferences?.useSelfHostedCatalogue)}
               onChange={(e) => updateUserPreferences({ useSelfHostedCatalogue: e.target.checked })}
             />
