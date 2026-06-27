@@ -16,6 +16,8 @@ import {
 } from "@main/level";
 
 const signOut = async (_event: Electron.IpcMainInvokeEvent) => {
+  const isSelfHostedActive = HydraApi.isSelfHostedAuthenticated();
+
   const databaseOperations = db
     .batch([
       {
@@ -28,8 +30,9 @@ const signOut = async (_event: Electron.IpcMainInvokeEvent) => {
       },
     ])
     .then(() => {
-      /* Removes all games being played */
       gamesPlaytime.clear();
+
+      if (isSelfHostedActive) return Promise.resolve();
 
       return Promise.all([
         gamesSublevel.clear(),
@@ -39,12 +42,10 @@ const signOut = async (_event: Electron.IpcMainInvokeEvent) => {
       ]);
     });
 
-  /* Cancels any ongoing downloads */
   DownloadManager.cancelDownload();
 
   HydraApi.handleSignOut();
 
-  /* The friends window is only meaningful while signed in */
   WindowManager.closeFriendsWindow();
 
   await Promise.all([
@@ -56,3 +57,4 @@ const signOut = async (_event: Electron.IpcMainInvokeEvent) => {
 };
 
 registerEvent("signOut", signOut);
+
