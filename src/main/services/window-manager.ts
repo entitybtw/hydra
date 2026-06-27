@@ -604,11 +604,22 @@ export class WindowManager {
 
     win.removeMenu();
 
-    const url = userToken
-      ? `${baseUrl}/web/auto-login?userToken=${encodeURIComponent(userToken)}`
-      : `${baseUrl}/`;
+    if (userToken) {
+      const { net } = require("electron");
+      const req = net.request({ method: "POST", url: `${baseUrl}/web/auto-login` });
+      req.setHeader("Content-Type", "application/json");
+      req.on("response", (res: any) => {
+        // read response to completion so cookie is set, then load dashboard
+        res.on("data", () => {});
+        res.on("end", () => win.loadURL(`${baseUrl}/web/dashboard`));
+      });
+      req.on("error", () => win.loadURL(`${baseUrl}/`));
+      req.write(JSON.stringify({ userToken }));
+      req.end();
+    } else {
+      win.loadURL(`${baseUrl}/`);
+    }
 
-    win.loadURL(url);
     win.once("ready-to-show", () => win.show());
   }
 
@@ -1169,9 +1180,19 @@ export class WindowManager {
     win.removeMenu();
 
     if (selfHostedUrl) {
-      const params = new URLSearchParams({ launcher: "1" });
-      if (apiToken) params.set("token", apiToken);
-      win.loadURL(`${selfHostedUrl}/?${params.toString()}`);
+      const loadLogin = () => win.loadURL(`${selfHostedUrl}/?launcher=1`);
+      if (apiToken) {
+        // POST token to set gate cookie without exposing it in URL
+        const { net } = require("electron");
+        const req = net.request({ method: "POST", url: `${selfHostedUrl}/web/launcher-gate` });
+        req.setHeader("Content-Type", "application/json");
+        req.on("response", () => loadLogin());
+        req.on("error", () => loadLogin());
+        req.write(JSON.stringify({ token: apiToken }));
+        req.end();
+      } else {
+        loadLogin();
+      }
     } else {
       this.loadWindowURL(win, "self-hosted-auth");
     }
