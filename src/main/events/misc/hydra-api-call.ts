@@ -55,11 +55,12 @@ const hydraApiCall = async (
     const isDownloadSourcesUrl = url.includes("/download-sources") && method === "get";
     const isCatalogueUrl = !isDownloadSourcesUrl && (
       url === "/catalogue/search" ||
-      url.startsWith("/catalogue/") ||
+      url.match(/^\/catalogue\/(hot|weekly|achievements)$/) !== null ||
+      url === "/catalogue/search/suggestions" ||
       url === "/games/shop-details" ||
-      url.startsWith("/games/steam/") ||
-      url.startsWith("/games/launchbox/") ||
-      (url.match(/^\/games\/[^/]+\/[^/]+\/(reviews|how-long-to-beat|protondb)/) !== null)
+      url.match(/^\/games\/steam\/\d+$/) !== null ||
+      url.match(/^\/games\/launchbox\/[^/]+$/) !== null ||
+      url.match(/^\/games\/[^/]+\/[^/]+\/(reviews|reviews\/check|how-long-to-beat|protondb)/) !== null
     );
 
     if (isDownloadSourcesUrl && HydraApi.useSelfHostedCatalogue) {
