@@ -7,7 +7,7 @@ import {
   updateGameExecutablePath,
   updateGameTrackingExecutablePaths,
 } from "@main/helpers/update-executable-path";
-import { logger } from "@main/services";
+import { HydraApi, logger } from "@main/services";
 import type { GameShop } from "@types";
 
 const updateExecutablePath = async (
@@ -32,6 +32,8 @@ const updateExecutablePath = async (
     automaticCloudSync:
       executablePath === null ? false : game.automaticCloudSync,
   });
+
+  HydraApi.put(`/profile/games/${shop}/${objectId}`, { executablePath }).catch(() => {});
 
   // Calculate size in background and update later
   if (parsedPath) {

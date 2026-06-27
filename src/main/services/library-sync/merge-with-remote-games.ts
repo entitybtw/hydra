@@ -165,6 +165,7 @@ export const mergeWithRemoteGames = async () => {
             achievementCount: game.achievementCount,
             unlockedAchievementCount: game.unlockedAchievementCount,
             platform: game.platform ?? null,
+            executablePath: (game as any).executablePath ?? null,
           });
         }
 
