@@ -11,6 +11,7 @@ import {
 } from "@primer/octicons-react";
 import { settingsContext } from "@renderer/context";
 import { AuthPage } from "@shared";
+import { useAppSelector } from "@renderer/hooks";
 import "./settings-account.scss";
 
 interface FormValues {
@@ -43,6 +44,10 @@ export function SettingsAccount() {
     updateUserDetails,
     unblockUser,
   } = useUserDetails();
+
+  const userPreferences = useAppSelector((state) => state.userPreferences.value);
+  const selfHostedUrl = userPreferences?.selfHostedApiUrl;
+  const isSelfHosted = Boolean(selfHostedUrl);
 
   useEffect(() => {
     if (userDetails?.profileVisibility) {
@@ -185,7 +190,9 @@ export function SettingsAccount() {
         <div className="settings-account__actions">
           <Button
             theme="outline"
-            onClick={() => window.electron.openAuthWindow(AuthPage.UpdateEmail)}
+            onClick={() => isSelfHosted
+              ? window.electron.openExternal(`${selfHostedUrl}/web/dashboard`)
+              : window.electron.openAuthWindow(AuthPage.UpdateEmail)}
           >
             <MailIcon />
             {t("update_email")}
@@ -193,9 +200,9 @@ export function SettingsAccount() {
 
           <Button
             theme="outline"
-            onClick={() =>
-              window.electron.openAuthWindow(AuthPage.UpdatePassword)
-            }
+            onClick={() => isSelfHosted
+              ? window.electron.openExternal(`${selfHostedUrl}/web/dashboard`)
+              : window.electron.openAuthWindow(AuthPage.UpdatePassword)}
           >
             <KeyIcon />
             {t("update_password")}
@@ -212,7 +219,9 @@ export function SettingsAccount() {
         <Button
           className="settings-account__subscription-button"
           theme="outline"
-          onClick={() => window.electron.openCheckout()}
+          onClick={() => isSelfHosted
+            ? window.electron.openExternal(`${selfHostedUrl}/web/dashboard`)
+            : window.electron.openCheckout()}
         >
           <CloudIcon />
           {getHydraCloudSectionContent().callToAction}
