@@ -21,8 +21,7 @@ With a self-hosted instance you get:
 - **Your own cloud saves** — save backups stored on your server, not Hydra Cloud
 - **Your own account** — register with a username and password on your server
 - **Public profile** — shareable profile page at `your-server/u/username` with playtime and game library
-- **Web dashboard** — manage your profile, Steam integration, accent color, and custom CSS from a browser or from inside the launcher
-- **Steam library sync** — connect your Steam account to pull playtime automatically
+- **Web dashboard** — manage your profile, accent color, and custom CSS from a browser or from inside the launcher
 - **No subscription** — everything works without a Hydra Cloud subscription
 
 You can use the self-hosted account alongside your official Hydra account at the same time — the sidebar shows both.
