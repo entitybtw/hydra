@@ -9,6 +9,7 @@ export const createGame = async (game: Game) => {
 
   return HydraApi.post(`/profile/games`, {
     objectId: game.objectId,
+    title: game.title,
     playTimeInMilliseconds: Math.trunc(game.playTimeInMilliseconds ?? 0),
     shop: game.shop,
     lastTimePlayed: game.lastTimePlayed,
