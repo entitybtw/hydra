@@ -31,8 +31,14 @@ const hydraApiCall = async (
   try {
     let request: Promise<unknown>;
 
-    const isGameDataUrl =
-      url.match(/^\/games\/[^/]+\/[^/]+\/(reviews|how-long-to-beat|protondb)/) !== null;
+    const isReviewsUrl = url.match(/^\/games\/[^/]+\/[^/]+\/reviews/) !== null;
+    const isHltbUrl = url.match(/^\/games\/[^/]+\/[^/]+\/how-long-to-beat/) !== null;
+    const isProtondbUrl = url.match(/^\/games\/[^/]+\/[^/]+\/protondb/) !== null;
+    const isGameDataUrl = isReviewsUrl || isHltbUrl || isProtondbUrl;
+
+    const gameDataFlag = isReviewsUrl ? HydraApi.useSelfHostedReviews
+      : isHltbUrl ? HydraApi.useSelfHostedHltb
+      : HydraApi.useSelfHostedProtondb;
 
     const isCatalogueUrl = !isGameDataUrl && (
       url === "/catalogue/search" ||
@@ -45,7 +51,7 @@ const hydraApiCall = async (
       request = method === "post"
         ? HydraApi.cataloguePost(url, data)
         : HydraApi.catalogueGet(url, params);
-    } else if (isGameDataUrl && HydraApi.useSelfHostedGameData) {
+    } else if (isGameDataUrl && gameDataFlag) {
       switch (method) {
         case "get": request = HydraApi.gameDataGet(url, params); break;
         case "post": request = HydraApi.gameDataPost(url, data); break;

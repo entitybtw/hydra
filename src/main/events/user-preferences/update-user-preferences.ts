@@ -113,8 +113,14 @@ const updateUserPreferences = async (
   if (Object.hasOwn(preferences, "useSelfHostedCatalogue")) {
     HydraApi.useSelfHostedCatalogue = Boolean(updatedPreferences.useSelfHostedCatalogue) && Boolean(updatedPreferences.selfHostedApiUrl);
   }
-  if (Object.hasOwn(preferences, "useSelfHostedGameData")) {
-    HydraApi.useSelfHostedGameData = Boolean(updatedPreferences.useSelfHostedGameData) && Boolean(updatedPreferences.selfHostedApiUrl);
+  for (const [key, prop] of [
+    ["useSelfHostedReviews", "useSelfHostedReviews"],
+    ["useSelfHostedHltb", "useSelfHostedHltb"],
+    ["useSelfHostedProtondb", "useSelfHostedProtondb"],
+  ] as const) {
+    if (Object.hasOwn(preferences, key)) {
+      (HydraApi as any)[prop] = Boolean((updatedPreferences as any)[key]) && Boolean(updatedPreferences.selfHostedApiUrl);
+    }
   }
 };
 

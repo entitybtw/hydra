@@ -193,7 +193,9 @@ export interface UserPreferences {
   selfHostedTokenIssuedAt?: number;
   selfHostedSessionDurationDays?: number;
   useSelfHostedCatalogue?: boolean;
-  useSelfHostedGameData?: boolean;
+  useSelfHostedReviews?: boolean;
+  useSelfHostedHltb?: boolean;
+  useSelfHostedProtondb?: boolean;
   signOutOnExit?: boolean;
   selfHostedSignOutOnExit?: boolean;
 }

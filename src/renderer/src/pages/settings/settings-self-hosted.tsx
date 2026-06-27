@@ -121,9 +121,21 @@ export function SettingsSelfHosted() {
           />
 
           <CheckboxField
-            label="Use self-hosted server for reviews, HowLongToBeat & ProtonDB"
-            checked={Boolean(userPreferences?.useSelfHostedGameData)}
-            onChange={(e) => updateUserPreferences({ useSelfHostedGameData: e.target.checked })}
+            label="Use self-hosted server for reviews"
+            checked={Boolean(userPreferences?.useSelfHostedReviews)}
+            onChange={(e) => updateUserPreferences({ useSelfHostedReviews: e.target.checked })}
+          />
+
+          <CheckboxField
+            label="Use self-hosted server for HowLongToBeat"
+            checked={Boolean(userPreferences?.useSelfHostedHltb)}
+            onChange={(e) => updateUserPreferences({ useSelfHostedHltb: e.target.checked })}
+          />
+
+          <CheckboxField
+            label="Use self-hosted server for ProtonDB"
+            checked={Boolean(userPreferences?.useSelfHostedProtondb)}
+            onChange={(e) => updateUserPreferences({ useSelfHostedProtondb: e.target.checked })}
           />
 
           <Button
