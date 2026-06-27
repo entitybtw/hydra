@@ -132,6 +132,57 @@ export class HydraApi {
       return axios.get<T>(`${this.selfHostedConfig.url}${url}`, { params, timeout: 10000 })
         .then((r) => r.data);
     }
+    return this.officialInstance.get<T>(url, { headers: this.officialAuthHeaders(), params }).then((r) => r.data);
+  }
+
+  public static async gameDataGet<T = any>(url: string, params?: any): Promise<T> {
+    if (this.useSelfHostedGameData && this.selfHostedConfig) {
+      const { default: axios } = await import("axios");
+      const token = this.selfHostedConfig.userToken ?? this.selfHostedConfig.masterToken;
+      return axios.get<T>(`${this.selfHostedConfig.url}${url}`, {
+        params, timeout: 10000,
+        headers: { Authorization: `Bearer ${token}` },
+      }).then((r) => r.data);
+    }
+    return this.officialInstance.get<T>(url, { headers: this.officialAuthHeaders(), params }).then((r) => r.data);
+  }
+
+  public static async gameDataPost<T = any>(url: string, data?: any): Promise<T> {
+    if (this.useSelfHostedGameData && this.selfHostedConfig) {
+      const { default: axios } = await import("axios");
+      const token = this.selfHostedConfig.userToken ?? this.selfHostedConfig.masterToken;
+      return axios.post<T>(`${this.selfHostedConfig.url}${url}`, data, {
+        timeout: 10000,
+        headers: { Authorization: `Bearer ${token}` },
+      }).then((r) => r.data);
+    }
+    return this.postOfficial<T>(url, data);
+  }
+
+  public static async gameDataPut<T = any>(url: string, data?: any): Promise<T> {
+    if (this.useSelfHostedGameData && this.selfHostedConfig) {
+      const { default: axios } = await import("axios");
+      const token = this.selfHostedConfig.userToken ?? this.selfHostedConfig.masterToken;
+      return axios.put<T>(`${this.selfHostedConfig.url}${url}`, data, {
+        timeout: 10000,
+        headers: { Authorization: `Bearer ${token}` },
+      }).then((r) => r.data);
+    }
+    return this.officialInstance.put<T>(url, data, { headers: this.officialAuthHeaders() }).then((r) => r.data);
+  }
+
+  public static async gameDataDelete<T = any>(url: string): Promise<T> {
+    if (this.useSelfHostedGameData && this.selfHostedConfig) {
+      const { default: axios } = await import("axios");
+      const token = this.selfHostedConfig.userToken ?? this.selfHostedConfig.masterToken;
+      return axios.delete<T>(`${this.selfHostedConfig.url}${url}`, {
+        timeout: 10000,
+        headers: { Authorization: `Bearer ${token}` },
+      }).then((r) => r.data);
+    }
+    return this.officialInstance.delete<T>(url, { headers: this.officialAuthHeaders() }).then((r) => r.data);
+  }
+    }
     return this.officialInstance.get<T>(url, { headers: this.officialAuthHeaders(), params })
       .then((r) => r.data);
   }

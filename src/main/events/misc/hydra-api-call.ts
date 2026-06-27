@@ -41,18 +41,18 @@ const hydraApiCall = async (
       url.startsWith("/games/launchbox/")
     ) && !url.includes("/download-sources");
 
-    if (isGameDataUrl) {
-      console.log(`[gamedata] url=${url} flag=${HydraApi.useSelfHostedGameData}`);
-    }
-
     if (isCatalogueUrl && HydraApi.useSelfHostedCatalogue) {
       request = method === "post"
         ? HydraApi.cataloguePost(url, data)
         : HydraApi.catalogueGet(url, params);
     } else if (isGameDataUrl && HydraApi.useSelfHostedGameData) {
-      request = method === "post"
-        ? HydraApi.cataloguePost(url, data)
-        : HydraApi.catalogueGet(url, params);
+      switch (method) {
+        case "get": request = HydraApi.gameDataGet(url, params); break;
+        case "post": request = HydraApi.gameDataPost(url, data); break;
+        case "put": request = HydraApi.gameDataPut(url, data); break;
+        case "delete": request = HydraApi.gameDataDelete(url); break;
+        default: request = HydraApi.get(url, params, options);
+      }
     } else {
       switch (method) {
         case "get": request = HydraApi.get(url, params, options); break;
