@@ -42,7 +42,7 @@ const hydraApiCall = async (
     let request: Promise<unknown>;
 
     // Route catalogue requests to self-hosted if enabled
-    const isCatalogueUrl = url === "/catalogue/search" || url === "/games/shop-details" || url.startsWith("/games/steam/") || url.startsWith("/games/launchbox/");
+    const isCatalogueUrl = (url === "/catalogue/search" || url === "/games/shop-details" || url.startsWith("/games/steam/") || url.startsWith("/games/launchbox/")) && !url.includes("/download-sources");
     if (isCatalogueUrl && HydraApi.useSelfHostedCatalogue) {
       if (method === "post") {
         request = HydraApi.cataloguePost(url, data);
