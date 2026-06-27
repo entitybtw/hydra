@@ -108,7 +108,7 @@ export function SettingsSelfHosted() {
           <Button
             type="button"
             theme="outline"
-            onClick={() => window.electron.openExternal(`${form.url}/web/dashboard`)}
+            onClick={() => window.electron.openExternal(`${form.url}/?token=${encodeURIComponent(form.token)}`)}
             style={{ marginTop: "8px" }}
           >
             Change password / manage account

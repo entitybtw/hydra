@@ -47,7 +47,9 @@ export function SettingsAccount() {
 
   const userPreferences = useAppSelector((state) => state.userPreferences.value);
   const selfHostedUrl = userPreferences?.selfHostedApiUrl;
+  const selfHostedToken = userPreferences?.selfHostedApiToken;
   const isSelfHosted = Boolean(selfHostedUrl);
+  const selfHostedDashboard = selfHostedUrl ? `${selfHostedUrl}/?token=${encodeURIComponent(selfHostedToken ?? "")}` : "";
 
   useEffect(() => {
     if (userDetails?.profileVisibility) {
@@ -191,7 +193,7 @@ export function SettingsAccount() {
           <Button
             theme="outline"
             onClick={() => isSelfHosted
-              ? window.electron.openExternal(`${selfHostedUrl}/web/dashboard`)
+              ? window.electron.openExternal(selfHostedDashboard)
               : window.electron.openAuthWindow(AuthPage.UpdateEmail)}
           >
             <MailIcon />
@@ -201,7 +203,7 @@ export function SettingsAccount() {
           <Button
             theme="outline"
             onClick={() => isSelfHosted
-              ? window.electron.openExternal(`${selfHostedUrl}/web/dashboard`)
+              ? window.electron.openExternal(selfHostedDashboard)
               : window.electron.openAuthWindow(AuthPage.UpdatePassword)}
           >
             <KeyIcon />
@@ -220,7 +222,7 @@ export function SettingsAccount() {
           className="settings-account__subscription-button"
           theme="outline"
           onClick={() => isSelfHosted
-            ? window.electron.openExternal(`${selfHostedUrl}/web/dashboard`)
+            ? window.electron.openExternal(selfHostedDashboard)
             : window.electron.openCheckout()}
         >
           <CloudIcon />
