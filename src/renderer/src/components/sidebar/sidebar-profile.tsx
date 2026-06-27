@@ -28,10 +28,16 @@ export function SidebarProfile() {
   const { showSuccessToast } = useToast();
 
   const { gameRunning } = useAppSelector((state) => state.gameRunning);
-  const userPreferences = useAppSelector((state) => state.userPreferences.value);
+  const userPreferences = useAppSelector(
+    (state) => state.userPreferences.value
+  );
   const isSelfHosted = Boolean(userPreferences?.selfHostedApiUrl);
 
-  const [officialProfile, setOfficialProfile] = useState<{ displayName: string; profileImageUrl: string | null; id: string } | null>(null);
+  const [officialProfile, setOfficialProfile] = useState<{
+    displayName: string;
+    profileImageUrl: string | null;
+    id: string;
+  } | null>(null);
   const [officialDropdownOpen, setOfficialDropdownOpen] = useState(false);
 
   const [notificationCount, setNotificationCount] = useState(0);
@@ -69,14 +75,26 @@ export function SidebarProfile() {
 
   useEffect(() => {
     if (!isSelfHosted) return;
-    window.electron.getOfficialProfile().then(setOfficialProfile).catch(() => {});
+    window.electron
+      .getOfficialProfile()
+      .then(setOfficialProfile)
+      .catch(() => {});
     const unsubSignIn = window.electron.onOfficialSignIn(() => {
-      window.electron.getOfficialProfile().then(setOfficialProfile).catch(() => {});
+      window.electron
+        .getOfficialProfile()
+        .then(setOfficialProfile)
+        .catch(() => {});
     });
     const unsubUpdated = window.electron.onProfileUpdated(() => {
-      window.electron.getOfficialProfile().then(setOfficialProfile).catch(() => {});
+      window.electron
+        .getOfficialProfile()
+        .then(setOfficialProfile)
+        .catch(() => {});
     });
-    return () => { unsubSignIn(); unsubUpdated(); };
+    return () => {
+      unsubSignIn();
+      unsubUpdated();
+    };
   }, [isSelfHosted]);
 
   useEffect(() => {
@@ -233,6 +251,9 @@ export function SidebarProfile() {
     setIsSigningOut(true);
     closeDropdown();
     try {
+      if (isSelfHosted && userPreferences?.selfHostedUserToken) {
+        await window.electron.updateUserPreferences({ selfHostedUserToken: null, selfHostedTokenIssuedAt: undefined });
+      }
       await signOut();
       showSuccessToast(t("user_profile:successfully_signed_out"));
     } finally {
@@ -264,7 +285,11 @@ export function SidebarProfile() {
         <div className="sidebar-profile__official-avatar">
           <button
             type="button"
-            title={officialProfile ? officialProfile.displayName : "Sign in to Hydra Cloud"}
+            title={
+              officialProfile
+                ? officialProfile.displayName
+                : "Sign in to Hydra Cloud"
+            }
             className="sidebar-profile__official-btn"
             onClick={() => {
               if (officialProfile) {
@@ -274,12 +299,22 @@ export function SidebarProfile() {
               }
             }}
           >
-            <Avatar size={28} src={officialProfile?.profileImageUrl} alt={officialProfile?.displayName ?? "Hydra Cloud"} />
+            <Avatar
+              size={28}
+              src={officialProfile?.profileImageUrl}
+              alt={officialProfile?.displayName ?? "Hydra Cloud"}
+            />
           </button>
           {officialDropdownOpen && officialProfile && (
             <div className="sidebar-profile__dropdown sidebar-profile__dropdown--official">
-              <button type="button" className="sidebar-profile__dropdown-item"
-                onClick={() => { setOfficialDropdownOpen(false); navigate(`/profile/${officialProfile.id}`); }}>
+              <button
+                type="button"
+                className="sidebar-profile__dropdown-item"
+                onClick={() => {
+                  setOfficialDropdownOpen(false);
+                  navigate(`/profile/${officialProfile.id}`);
+                }}
+              >
                 <PersonIcon size={16} />
                 <span>{officialProfile.displayName} (Official)</span>
               </button>
