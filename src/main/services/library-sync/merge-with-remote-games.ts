@@ -118,6 +118,19 @@ export const mergeWithRemoteGames = async () => {
               ? game.playTimeInMilliseconds
               : localGame.playTimeInMilliseconds;
 
+          const localTitle = localGame.title || "";
+          const remoteTitle = game.title || "";
+          const titleNeedsUpdate =
+            localTitle &&
+            localTitle !== game.objectId &&
+            localTitle !== remoteTitle;
+
+          if (titleNeedsUpdate) {
+            HydraApi.put(`/profile/games/${game.shop}/${game.objectId}`, {
+              title: localTitle,
+            }).catch(() => {});
+          }
+
           await gamesSublevel.put(gameKey, {
             ...localGame,
             remoteId: game.id,
@@ -176,14 +189,18 @@ export const mergeWithRemoteGames = async () => {
         await gamesShopAssetsSublevel.put(gameKey, {
           shop: game.shop,
           objectId: game.objectId,
-          title: localGame?.title || game.title || localGameShopAsset?.title || "",
-          coverImageUrl: coverImageUrl ?? localGameShopAsset?.coverImageUrl ?? null,
+          title:
+            localGame?.title || game.title || localGameShopAsset?.title || "",
+          coverImageUrl:
+            coverImageUrl ?? localGameShopAsset?.coverImageUrl ?? null,
           libraryHeroImageUrl: mergedHeroUrl ?? null,
           libraryImageUrl:
             game.libraryImageUrl ?? localGameShopAsset?.libraryImageUrl ?? null,
-          logoImageUrl: game.logoImageUrl ?? localGameShopAsset?.logoImageUrl ?? null,
+          logoImageUrl:
+            game.logoImageUrl ?? localGameShopAsset?.logoImageUrl ?? null,
           iconUrl: mergedIconUrl ?? null,
-          logoPosition: game.logoPosition ?? localGameShopAsset?.logoPosition ?? null,
+          logoPosition:
+            game.logoPosition ?? localGameShopAsset?.logoPosition ?? null,
           downloadSources:
             game.downloadSources ?? localGameShopAsset?.downloadSources ?? [],
           updatedAt,

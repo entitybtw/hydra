@@ -20,9 +20,11 @@ const changeGamePlaytime = async (
       });
     }
 
+    const now = new Date();
     await gamesSublevel.put(gameKey, {
       ...game,
       playTimeInMilliseconds: playTimeInSeconds * 1000,
+      lastTimePlayed: game.lastTimePlayed ?? now,
       hasManuallyUpdatedPlaytime: true,
     });
   } catch (error) {
