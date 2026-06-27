@@ -9,8 +9,6 @@ export function SettingsSelfHosted() {
   const { updateUserPreferences } = useContext(settingsContext);
   const { showSuccessToast, showErrorToast } = useToast();
 
-  const { updateUserPreferences } = useContext(settingsContext);
-
   const userPreferences = useAppSelector(
     (state) => state.userPreferences.value
   );
