@@ -109,6 +109,10 @@ const updateUserPreferences = async (
       HydraApi.clearSelfHostedConfig();
     }
   }
+
+  if (Object.hasOwn(preferences, "useSelfHostedCatalogue")) {
+    HydraApi.useSelfHostedCatalogue = Boolean(updatedPreferences.useSelfHostedCatalogue) && Boolean(updatedPreferences.selfHostedApiUrl);
+  }
 };
 
 registerEvent("updateUserPreferences", updateUserPreferences);

@@ -41,24 +41,34 @@ const hydraApiCall = async (
   try {
     let request: Promise<unknown>;
 
-    switch (method) {
-      case "get":
-        request = HydraApi.get(url, params, options);
-        break;
-      case "post":
-        request = HydraApi.post(url, data, options);
-        break;
-      case "put":
-        request = HydraApi.put(url, data, options);
-        break;
-      case "patch":
-        request = HydraApi.patch(url, data, options);
-        break;
-      case "delete":
-        request = HydraApi.delete(url, options);
-        break;
-      default:
-        throw new Error(`Unsupported HTTP method: ${method}`);
+    // Route catalogue requests to self-hosted if enabled
+    const isCatalogueUrl = url === "/catalogue/search" || url === "/games/shop-details" || url.startsWith("/games/steam/") || url.startsWith("/games/launchbox/");
+    if (isCatalogueUrl && HydraApi.useSelfHostedCatalogue) {
+      if (method === "post") {
+        request = HydraApi.cataloguePost(url, data);
+      } else {
+        request = HydraApi.catalogueGet(url, params);
+      }
+    } else {
+      switch (method) {
+        case "get":
+          request = HydraApi.get(url, params, options);
+          break;
+        case "post":
+          request = HydraApi.post(url, data, options);
+          break;
+        case "put":
+          request = HydraApi.put(url, data, options);
+          break;
+        case "patch":
+          request = HydraApi.patch(url, data, options);
+          break;
+        case "delete":
+          request = HydraApi.delete(url, options);
+          break;
+        default:
+          throw new Error(`Unsupported HTTP method: ${method}`);
+      }
     }
 
     return await request;

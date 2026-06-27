@@ -188,12 +188,13 @@ export interface UserPreferences {
   hideClassicsBookmark?: boolean;
   classicsUseHeroLayout?: boolean;
   selfHostedApiUrl?: string | null;
-  selfHostedApiToken?: string | null;      // master token — proves access to instance
-  selfHostedUserToken?: string | null;     // user JWT — from login/register
+  selfHostedApiToken?: string | null;
+  selfHostedUserToken?: string | null;
+  selfHostedTokenIssuedAt?: number;
+  selfHostedSessionDurationDays?: number;
+  useSelfHostedCatalogue?: boolean;
   signOutOnExit?: boolean;
   selfHostedSignOutOnExit?: boolean;
-  selfHostedTokenIssuedAt?: number;        // ms timestamp when token was issued
-  selfHostedSessionDurationDays?: number;  // 0 = never expire
 }
 
 export interface ScreenState {

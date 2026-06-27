@@ -48,6 +48,8 @@ export class HydraApi {
     userToken: string | null;
   } | null = null;
 
+  public static useSelfHostedCatalogue = false;
+
   public static setSelfHostedConfig(
     url: string,
     masterToken: string,
@@ -110,6 +112,26 @@ export class HydraApi {
   ): Promise<T> {
     return this.officialInstance
       .post<T>(url, data, { headers: this.officialAuthHeaders() })
+      .then((r) => r.data);
+  }
+
+  // Routes catalogue requests to self-hosted if enabled, else official
+  public static async cataloguePost<T = any>(url: string, data?: any): Promise<T> {
+    if (this.useSelfHostedCatalogue && this.selfHostedConfig) {
+      const { default: axios } = await import("axios");
+      return axios.post<T>(`${this.selfHostedConfig.url}${url}`, data, { timeout: 10000 })
+        .then((r) => r.data);
+    }
+    return this.postOfficial<T>(url, data);
+  }
+
+  public static async catalogueGet<T = any>(url: string, params?: any): Promise<T> {
+    if (this.useSelfHostedCatalogue && this.selfHostedConfig) {
+      const { default: axios } = await import("axios");
+      return axios.get<T>(`${this.selfHostedConfig.url}${url}`, { params, timeout: 10000 })
+        .then((r) => r.data);
+    }
+    return this.officialInstance.get<T>(url, { headers: this.officialAuthHeaders(), params })
       .then((r) => r.data);
   }
 
@@ -344,6 +366,7 @@ export class HydraApi {
         userPreferences.selfHostedApiToken,
         expired ? null : userPreferences.selfHostedUserToken
       );
+      this.useSelfHostedCatalogue = userPreferences.useSelfHostedCatalogue ?? false;
     }
 
     this.userAuth = {

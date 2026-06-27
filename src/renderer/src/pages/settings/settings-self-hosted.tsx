@@ -9,6 +9,8 @@ export function SettingsSelfHosted() {
   const { updateUserPreferences } = useContext(settingsContext);
   const { showSuccessToast, showErrorToast } = useToast();
 
+  const { updateUserPreferences } = useContext(settingsContext);
+
   const userPreferences = useAppSelector(
     (state) => state.userPreferences.value
   );
@@ -113,6 +115,12 @@ export function SettingsSelfHosted() {
           >
             Change password / manage account
           </Button>
+
+          <CheckboxField
+            label="Use self-hosted server for game catalogue (search, details, achievements)"
+            checked={Boolean(userPreferences?.useSelfHostedCatalogue)}
+            onChange={(e) => updateUserPreferences({ useSelfHostedCatalogue: e.target.checked })}
+          />
 
           <Button
             type="button"
