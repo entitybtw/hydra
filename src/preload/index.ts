@@ -140,6 +140,12 @@ contextBridge.exposeInMainWorld("electron", {
     shop: GameShop,
     options?: { forceFresh?: boolean }
   ) => ipcRenderer.invoke("getGameAssets", objectId, shop, options),
+  searchSteamGridDb: (
+    query: string,
+    assetType: "icon" | "logo" | "hero",
+    steamAppId?: string | null
+  ): Promise<{ id: number; url: string; thumb: string }[]> =>
+    ipcRenderer.invoke("searchSteamGridDb", query, assetType, steamAppId),
   onUpdateAchievements: (
     objectId: string,
     shop: GameShop,

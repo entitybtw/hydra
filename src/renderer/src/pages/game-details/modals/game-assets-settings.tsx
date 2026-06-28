@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ImageIcon, XIcon } from "@primer/octicons-react";
+import { ImageIcon, SearchIcon, XIcon } from "@primer/octicons-react";
 import { Button, TextField } from "@renderer/components";
 import { useToast } from "@renderer/hooks";
 import { generateRandomGradient } from "@renderer/helpers";
@@ -101,6 +101,11 @@ export function GameAssetsSettings({
   >(null);
   const [selectedAssetType, setSelectedAssetType] = useState<AssetType>("icon");
   const [dragOverTarget, setDragOverTarget] = useState<string | null>(null);
+  const [sgdbResults, setSgdbResults] = useState<{ id: number; url: string; thumb: string }[]>([]);
+  const [sgdbQuery, setSgdbQuery] = useState("");
+  const [sgdbLoading, setSgdbLoading] = useState(false);
+  const [sgdbOpen, setSgdbOpen] = useState(false);
+  const sgdbSearchedAssetRef = useRef<AssetType>("icon");
 
   const isCustomGame = useCallback(
     (currentGame: LibraryGame | Game): boolean => {
@@ -551,6 +556,45 @@ export function GameAssetsSettings({
     return assetPath ? `local:${assetPath}` : undefined;
   };
 
+  const openSgdb = async (assetType: AssetType) => {
+    sgdbSearchedAssetRef.current = assetType;
+    setSgdbOpen(true);
+    setSgdbResults([]);
+    const query = sgdbQuery || game.title;
+    setSgdbQuery(query);
+    await searchSgdb(query, assetType);
+  };
+
+  const searchSgdb = async (query: string, assetType: AssetType) => {
+    if (!query.trim()) return;
+    setSgdbLoading(true);
+    try {
+      const steamAppId = game.shop === "steam" ? game.objectId : null;
+      const results = await window.electron.searchSteamGridDb(query, assetType, steamAppId);
+      setSgdbResults(results);
+    } finally {
+      setSgdbLoading(false);
+    }
+  };
+
+  const handleSgdbSelect = async (url: string) => {
+    setSgdbOpen(false);
+    const assetType = sgdbSearchedAssetRef.current;
+    try {
+      const res = await fetch(url);
+      const buffer = await res.arrayBuffer();
+      const ext = url.split("?")[0].split(".").pop() ?? "png";
+      const fileName = `sgdb-${assetType}-${Date.now()}.${ext}`;
+      const tempPath = await window.electron.saveTempFile(fileName, new Uint8Array(buffer));
+      const copiedUrl = await window.electron.copyCustomGameAsset(tempPath, assetType);
+      updateAssetPaths(assetType, copiedUrl.replace("local:", ""), tempPath);
+      setPendingUpdateMessage(`${capitalizeAssetType(assetType)} updated successfully!`);
+      await window.electron.deleteTempFile?.(tempPath);
+    } catch {
+      showErrorToast(t("edit_game_modal_failed"));
+    }
+  };
+
   const renderImageSection = (assetType: AssetType) => {
     const assetPath = assetPaths[assetType];
     const assetDisplayPath = getAssetDisplayPath(assetType);
@@ -579,6 +623,15 @@ export function GameAssetsSettings({
               >
                 <ImageIcon />
                 {t("edit_game_modal_browse")}
+              </Button>
+              <Button
+                type="button"
+                theme="outline"
+                onClick={() => openSgdb(assetType)}
+                disabled={isUpdating}
+              >
+                <SearchIcon />
+                SteamGridDB
               </Button>
               {(assetPath ||
                 (isCustomGame(game) && getOriginalAssetUrl(assetType))) && (
@@ -686,6 +739,63 @@ export function GameAssetsSettings({
       </div>
 
       {renderImageSection(selectedAssetType)}
+
+      {sgdbOpen && (
+        <div className="game-assets-settings__sgdb-section">
+          <div className="game-assets-settings__sgdb-search-row">
+            <div className="game-assets-settings__sgdb-search-input">
+              <TextField
+                value={sgdbQuery}
+                onChange={(e) => setSgdbQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") searchSgdb(sgdbQuery, sgdbSearchedAssetRef.current);
+                }}
+                placeholder={t("edit_game_modal_sgdb_search")}
+                theme="dark"
+              />
+            </div>
+            <Button
+              type="button"
+              theme="outline"
+              onClick={() => searchSgdb(sgdbQuery, sgdbSearchedAssetRef.current)}
+              disabled={sgdbLoading}
+            >
+              <SearchIcon />
+            </Button>
+            <Button
+              type="button"
+              theme="outline"
+              onClick={() => setSgdbOpen(false)}
+            >
+              <XIcon />
+            </Button>
+          </div>
+
+          {sgdbLoading ? (
+            <div className="game-assets-settings__sgdb-empty">
+              {t("loading")}
+            </div>
+          ) : sgdbResults.length === 0 ? (
+            <div className="game-assets-settings__sgdb-empty">
+              {t("edit_game_modal_sgdb_no_results")}
+            </div>
+          ) : (
+            <div className="game-assets-settings__sgdb-grid">
+              {sgdbResults.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className="game-assets-settings__sgdb-item"
+                  onClick={() => handleSgdbSelect(item.url)}
+                  title={item.url}
+                >
+                  <img src={item.thumb} alt="" loading="lazy" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

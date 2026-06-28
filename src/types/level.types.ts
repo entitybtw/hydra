@@ -198,6 +198,7 @@ export interface UserPreferences {
   useSelfHostedProtondb?: boolean;
   signOutOnExit?: boolean;
   selfHostedSignOutOnExit?: boolean;
+  steamGridDbApiKey?: string | null;
 }
 
 export interface ScreenState {
