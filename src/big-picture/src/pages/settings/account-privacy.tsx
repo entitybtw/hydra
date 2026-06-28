@@ -10,6 +10,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
   Button,
+  Checkbox,
   DropdownSelect,
   type DropdownSelectOption,
 } from "../../components";
@@ -18,6 +19,7 @@ import {
   useDate,
   useNavigation,
   useUserDetails,
+  useUserPreferences,
 } from "../../hooks";
 import type { FocusOverrides } from "../../services";
 import {
@@ -92,6 +94,7 @@ export function AccountPrivacySettingsSection({
   const { setFocus } = useNavigation();
   const { userDetails, hasActiveSubscription, patchUser, unblockUser } =
     useUserDetails();
+  const userPreferences = useUserPreferences();
   const [profileVisibility, setProfileVisibility] =
     useState<ProfileVisibility>("PUBLIC");
   const [blockedUsers, setBlockedUsers] = useState<UserFriend[]>([]);
@@ -430,6 +433,82 @@ export function AccountPrivacySettingsSection({
             <p className="account-privacy-settings-section__empty">
               You have no blocked users.
             </p>
+          )}
+        </div>
+      </SettingsSection>
+
+      <SettingsSection
+        title="Account"
+        description="Manage your account credentials."
+      >
+        <div className="account-privacy-settings-section__section-content">
+          <p style={{ marginBottom: 4 }}>
+            <strong>Username:</strong> {userDetails.username}
+          </p>
+          {userDetails.email && (
+            <p style={{ marginBottom: 8 }}>
+              <strong>Email:</strong> {userDetails.email}
+            </p>
+          )}
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <Button
+              variant="secondary"
+              focusId="account-update-email"
+              focusNavigationOverrides={{ up: { type: "block" }, down: { type: "item", itemId: "account-update-password" } }}
+              onClick={() => {
+                const isSelfHosted = Boolean(userPreferences?.selfHostedApiUrl);
+                if (isSelfHosted) {
+                  globalThis.window.electron.openSelfHostedDashboard();
+                } else {
+                  (globalThis.window.electron as any).openAuthWindow("update-email");
+                }
+              }}
+            >
+              Update Email
+            </Button>
+            <Button
+              variant="secondary"
+              focusId="account-update-password"
+              focusNavigationOverrides={{ up: { type: "item", itemId: "account-update-email" }, down: { type: "item", itemId: "account-sign-out-exit" } }}
+              onClick={() => {
+                const isSelfHosted = Boolean(userPreferences?.selfHostedApiUrl);
+                if (isSelfHosted) {
+                  globalThis.window.electron.openSelfHostedDashboard();
+                } else {
+                  (globalThis.window.electron as any).openAuthWindow("update-password");
+                }
+              }}
+            >
+              Update Password
+            </Button>
+          </div>
+        </div>
+      </SettingsSection>
+
+      <SettingsSection
+        title="Session"
+        description="Control when you are signed out automatically."
+      >
+        <div className="account-privacy-settings-section__section-content">
+          <Checkbox
+            id="account-sign-out-exit"
+            label="Sign out of official account when closing the app"
+            checked={Boolean(userPreferences?.signOutOnExit)}
+            focusId="account-sign-out-exit"
+            navigationOverrides={{ up: { type: "item", itemId: "account-update-password" }, down: Boolean(userPreferences?.selfHostedApiUrl) ? { type: "item", itemId: "account-self-sign-out-exit" } : { type: "block" } }}
+            block
+            onChange={(v) => globalThis.window.electron.updateUserPreferences({ signOutOnExit: v })}
+          />
+          {Boolean(userPreferences?.selfHostedApiUrl) && (
+            <Checkbox
+              id="account-self-sign-out-exit"
+              label="Sign out of self-hosted account when closing the app"
+              checked={Boolean(userPreferences?.selfHostedSignOutOnExit)}
+              focusId="account-self-sign-out-exit"
+              navigationOverrides={{ up: { type: "item", itemId: "account-sign-out-exit" }, down: { type: "block" } }}
+              block
+              onChange={(v) => globalThis.window.electron.updateUserPreferences({ selfHostedSignOutOnExit: v })}
+            />
           )}
         </div>
       </SettingsSection>
