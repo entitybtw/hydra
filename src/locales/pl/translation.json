@@ -868,7 +868,18 @@
     "big_picture_enable_sounds": "Włącz dźwięki Big Picture",
     "big_picture_enable_virtual_keyboard": "Włącz wirtualną klawiaturę",
     "big_picture_enable_diagnostics": "Włącz diagnostykę nawigacji",
-    "big_picture_diagnostics_position": "Pozycja diagnostyki"
+    "big_picture_diagnostics_position": "Pozycja diagnostyki",
+    "self_hosted_api": "Self-Hosted API",
+    "enable_self_hosted_api": "Włącz Self-Hosted API",
+    "self_hosted_api_url": "URL API",
+    "self_hosted_api_token": "Token dostępu",
+    "self_hosted_use_steam_catalogue": "[Eksperymentalne] Użyj Steam API dla katalogu gier (wyszukiwanie, szczegóły, gatunki — bez serwera)",
+    "self_hosted_use_reviews": "Użyj serwera self-hosted dla recenzji",
+    "self_hosted_use_hltb": "Użyj serwera self-hosted dla HowLongToBeat",
+    "self_hosted_use_protondb": "Użyj serwera self-hosted dla ProtonDB",
+    "self_hosted_change_password": "Zmień hasło / zarządzaj kontem",
+    "self_hosted_import_hydra_cloud": "Importuj z Hydra Cloud",
+    "self_hosted_importing": "Importowanie..."
   },
   "notifications": {
     "new_update_available": "Dostępna wersja {{version}}",

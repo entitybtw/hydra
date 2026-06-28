@@ -763,7 +763,18 @@
     "proton_version_auto": "Auto (global default or umu default)",
     "proton_source_umu_default": "umu default selection",
     "proton_source_steam": "Installed by Steam",
-    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d"
+    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d",
+    "self_hosted_api": "Self-Hosted API",
+    "enable_self_hosted_api": "Self-Hosted API 활성화",
+    "self_hosted_api_url": "API URL",
+    "self_hosted_api_token": "액세스 토큰",
+    "self_hosted_use_steam_catalogue": "[실험적] 게임 카탈로그에 Steam API 사용 (검색, 세부 정보, 장르 — 서버 불필요)",
+    "self_hosted_use_reviews": "리뷰에 self-hosted 서버 사용",
+    "self_hosted_use_hltb": "HowLongToBeat에 self-hosted 서버 사용",
+    "self_hosted_use_protondb": "ProtonDB에 self-hosted 서버 사용",
+    "self_hosted_change_password": "비밀번호 변경 / 계정 관리",
+    "self_hosted_import_hydra_cloud": "Hydra Cloud에서 가져오기",
+    "self_hosted_importing": "가져오는 중..."
   },
   "notifications": {
     "download_complete": "다운로드 완료",

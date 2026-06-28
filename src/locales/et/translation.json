@@ -766,7 +766,18 @@
     "proton_version_auto": "Auto (global default or umu default)",
     "proton_source_umu_default": "umu default selection",
     "proton_source_steam": "Installed by Steam",
-    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d"
+    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d",
+    "self_hosted_api": "Self-Hosted API",
+    "enable_self_hosted_api": "Luba self-hosted API",
+    "self_hosted_api_url": "API URL",
+    "self_hosted_api_token": "Juurdepääsuluba",
+    "self_hosted_use_steam_catalogue": "[Eksperimentaalne] Kasuta Steam API-t mängude kataloogi jaoks (otsing, üksikasjad, žanrid — serverit pole vaja)",
+    "self_hosted_use_reviews": "Kasuta self-hosted serverit arvustuste jaoks",
+    "self_hosted_use_hltb": "Kasuta self-hosted serverit HowLongToBeat jaoks",
+    "self_hosted_use_protondb": "Kasuta self-hosted serverit ProtonDB jaoks",
+    "self_hosted_change_password": "Muuda parooli / halda kontot",
+    "self_hosted_import_hydra_cloud": "Impordi Hydra Cloud'ist",
+    "self_hosted_importing": "Importimine..."
   },
   "notifications": {
     "download_complete": "Allalaadimine lõpetatud",

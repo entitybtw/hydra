@@ -1209,7 +1209,14 @@
     "self_hosted_api": "Self-Hosted API",
     "enable_self_hosted_api": "Enable self-hosted API",
     "self_hosted_api_url": "API URL",
-    "self_hosted_api_token": "Access token"
+    "self_hosted_api_token": "Access token",
+    "self_hosted_use_steam_catalogue": "[Experimental] Use Steam API for game catalogue (search, details, genres — no server needed)",
+    "self_hosted_use_reviews": "Use self-hosted server for reviews",
+    "self_hosted_use_hltb": "Use self-hosted server for HowLongToBeat",
+    "self_hosted_use_protondb": "Use self-hosted server for ProtonDB",
+    "self_hosted_change_password": "Change password / manage account",
+    "self_hosted_import_hydra_cloud": "Import from Hydra Cloud",
+    "self_hosted_importing": "Importing..."
   },
   "notifications": {
     "download_complete": "Download complete",

@@ -766,7 +766,18 @@
     "proton_version_auto": "Auto (global default or umu default)",
     "proton_source_umu_default": "umu default selection",
     "proton_source_steam": "Installed by Steam",
-    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d"
+    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d",
+    "self_hosted_api": "Self-Hosted API",
+    "enable_self_hosted_api": "Iespējot self-hosted API",
+    "self_hosted_api_url": "API URL",
+    "self_hosted_api_token": "Piekļuves marķieris",
+    "self_hosted_use_steam_catalogue": "[Eksperimentāls] Izmantot Steam API spēļu katalogam (meklēšana, detaļas, žanri — serveris nav nepieciešams)",
+    "self_hosted_use_reviews": "Izmantot self-hosted serveri atsauksmēm",
+    "self_hosted_use_hltb": "Izmantot self-hosted serveri HowLongToBeat",
+    "self_hosted_use_protondb": "Izmantot self-hosted serveri ProtonDB",
+    "self_hosted_change_password": "Mainīt paroli / pārvaldīt kontu",
+    "self_hosted_import_hydra_cloud": "Importēt no Hydra Cloud",
+    "self_hosted_importing": "Importē..."
   },
   "notifications": {
     "download_complete": "Lejupielāde pabeigta",

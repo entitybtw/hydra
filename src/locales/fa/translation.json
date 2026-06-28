@@ -763,7 +763,18 @@
     "proton_version_auto": "Auto (global default or umu default)",
     "proton_source_umu_default": "umu default selection",
     "proton_source_steam": "Installed by Steam",
-    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d"
+    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d",
+    "self_hosted_api": "Self-Hosted API",
+    "enable_self_hosted_api": "فعال‌سازی Self-Hosted API",
+    "self_hosted_api_url": "آدرس API",
+    "self_hosted_api_token": "توکن دسترسی",
+    "self_hosted_use_steam_catalogue": "[آزمایشی] استفاده از Steam API برای کاتالوگ بازی‌ها (جستجو، جزئیات، ژانرها — بدون نیاز به سرور)",
+    "self_hosted_use_reviews": "استفاده از سرور خودمیزبان برای نظرات",
+    "self_hosted_use_hltb": "استفاده از سرور خودمیزبان برای HowLongToBeat",
+    "self_hosted_use_protondb": "استفاده از سرور خودمیزبان برای ProtonDB",
+    "self_hosted_change_password": "تغییر رمز عبور / مدیریت حساب",
+    "self_hosted_import_hydra_cloud": "وارد کردن از Hydra Cloud",
+    "self_hosted_importing": "در حال وارد کردن..."
   },
   "notifications": {
     "download_complete": "دانلود تمام شد",

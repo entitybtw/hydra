@@ -766,7 +766,18 @@
     "proton_version_auto": "Auto (global default or umu default)",
     "proton_source_umu_default": "umu default selection",
     "proton_source_steam": "Installed by Steam",
-    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d"
+    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d",
+    "self_hosted_api": "Self-Hosted API",
+    "enable_self_hosted_api": "Habilitar Self-Hosted API",
+    "self_hosted_api_url": "URL de l'API",
+    "self_hosted_api_token": "Token d'accés",
+    "self_hosted_use_steam_catalogue": "[Experimental] Utilitza Steam API per al catàleg de jocs (cerca, detalls, gèneres — no cal servidor)",
+    "self_hosted_use_reviews": "Utilitza el servidor auto-allotjat per a les ressenyes",
+    "self_hosted_use_hltb": "Utilitza el servidor auto-allotjat per a HowLongToBeat",
+    "self_hosted_use_protondb": "Utilitza el servidor auto-allotjat per a ProtonDB",
+    "self_hosted_change_password": "Canviar contrasenya / gestionar compte",
+    "self_hosted_import_hydra_cloud": "Importar des de Hydra Cloud",
+    "self_hosted_importing": "Important..."
   },
   "notifications": {
     "download_complete": "La baixada ha finalitzat",

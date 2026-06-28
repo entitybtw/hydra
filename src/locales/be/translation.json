@@ -763,7 +763,18 @@
     "proton_version_auto": "Auto (global default or umu default)",
     "proton_source_umu_default": "umu default selection",
     "proton_source_steam": "Installed by Steam",
-    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d"
+    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d",
+    "self_hosted_api": "Self-Hosted API",
+    "enable_self_hosted_api": "Уключыць self-hosted API",
+    "self_hosted_api_url": "URL API",
+    "self_hosted_api_token": "Токен доступу",
+    "self_hosted_use_steam_catalogue": "[Эксперыментальна] Выкарыстоўваць Steam API для каталога гульняў (пошук, дэталі, жанры — сервер не патрэбны)",
+    "self_hosted_use_reviews": "Выкарыстоўваць self-hosted сервер для водгукаў",
+    "self_hosted_use_hltb": "Выкарыстоўваць self-hosted сервер для HowLongToBeat",
+    "self_hosted_use_protondb": "Выкарыстоўваць self-hosted сервер для ProtonDB",
+    "self_hosted_change_password": "Змяніць пароль / кіраванне акаўнтам",
+    "self_hosted_import_hydra_cloud": "Імпартаваць з Hydra Cloud",
+    "self_hosted_importing": "Імпарт..."
   },
   "notifications": {
     "download_complete": "Сцягванне скончана",

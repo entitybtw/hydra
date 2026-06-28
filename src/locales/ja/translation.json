@@ -791,7 +791,18 @@
     "create_shortcuts_on_download": "ゲームのダウンロード完了時にデスクトップとスタートメニューのショートカットを作成",
     "default_wine_prefix": "デフォルトのWineプレフィックスの場所",
     "default_proton_version": "デフォルトProtonバージョン",
-    "default_proton_version_description": "カスタムオーバーライドがないゲームで自動モードが使用するProtonバージョンを選択"
+    "default_proton_version_description": "カスタムオーバーライドがないゲームで自動モードが使用するProtonバージョンを選択",
+    "self_hosted_api": "Self-Hosted API",
+    "enable_self_hosted_api": "Self-Hosted APIを有効にする",
+    "self_hosted_api_url": "API URL",
+    "self_hosted_api_token": "アクセストークン",
+    "self_hosted_use_steam_catalogue": "[実験的] ゲームカタログにSteam APIを使用する（検索、詳細、ジャンル — サーバー不要）",
+    "self_hosted_use_reviews": "レビューにself-hostedサーバーを使用する",
+    "self_hosted_use_hltb": "HowLongToBeatにself-hostedサーバーを使用する",
+    "self_hosted_use_protondb": "ProtonDBにself-hostedサーバーを使用する",
+    "self_hosted_change_password": "パスワードを変更 / アカウントを管理",
+    "self_hosted_import_hydra_cloud": "Hydra Cloudからインポート",
+    "self_hosted_importing": "インポート中..."
   },
   "notifications": {
     "download_complete": "ダウンロード完了",

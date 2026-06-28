@@ -766,7 +766,18 @@
     "proton_version_auto": "Auto (global default or umu default)",
     "proton_source_umu_default": "umu default selection",
     "proton_source_steam": "Installed by Steam",
-    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d"
+    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d",
+    "self_hosted_api": "Self-Hosted API",
+    "enable_self_hosted_api": "启用 Self-Hosted API",
+    "self_hosted_api_url": "API 地址",
+    "self_hosted_api_token": "访问令牌",
+    "self_hosted_use_steam_catalogue": "[实验性] 使用 Steam API 获取游戏目录（搜索、详情、类型 — 无需服务器）",
+    "self_hosted_use_reviews": "使用 self-hosted 服务器获取评测",
+    "self_hosted_use_hltb": "使用 self-hosted 服务器获取 HowLongToBeat 数据",
+    "self_hosted_use_protondb": "使用 self-hosted 服务器获取 ProtonDB 数据",
+    "self_hosted_change_password": "更改密码 / 管理账户",
+    "self_hosted_import_hydra_cloud": "从 Hydra Cloud 导入",
+    "self_hosted_importing": "导入中..."
   },
   "notifications": {
     "download_complete": "下载完成",

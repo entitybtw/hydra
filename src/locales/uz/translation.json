@@ -766,7 +766,18 @@
     "proton_version_auto": "Auto (global default or umu default)",
     "proton_source_umu_default": "umu default selection",
     "proton_source_steam": "Installed by Steam",
-    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d"
+    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d",
+    "self_hosted_api": "Self-Hosted API",
+    "enable_self_hosted_api": "Self-hosted API ni yoqish",
+    "self_hosted_api_url": "API URL",
+    "self_hosted_api_token": "Kirish tokeni",
+    "self_hosted_use_steam_catalogue": "[Eksperimental] O'yin katalogi uchun Steam API dan foydalanish (qidirish, tafsilotlar, janrlar — server kerak emas)",
+    "self_hosted_use_reviews": "Sharhlar uchun self-hosted serverdan foydalanish",
+    "self_hosted_use_hltb": "HowLongToBeat uchun self-hosted serverdan foydalanish",
+    "self_hosted_use_protondb": "ProtonDB uchun self-hosted serverdan foydalanish",
+    "self_hosted_change_password": "Parolni o'zgartirish / hisobni boshqarish",
+    "self_hosted_import_hydra_cloud": "Hydra Cloud dan import qilish",
+    "self_hosted_importing": "Import qilinmoqda..."
   },
   "notifications": {
     "download_complete": "Yuklab olish yakunlandi",

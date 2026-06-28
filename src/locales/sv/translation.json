@@ -766,7 +766,18 @@
     "proton_version_auto": "Auto (global default or umu default)",
     "proton_source_umu_default": "umu default selection",
     "proton_source_steam": "Installed by Steam",
-    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d"
+    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d",
+    "self_hosted_api": "Self-Hosted API",
+    "enable_self_hosted_api": "Aktivera self-hosted API",
+    "self_hosted_api_url": "API URL",
+    "self_hosted_api_token": "Åtkomsttoken",
+    "self_hosted_use_steam_catalogue": "[Experimentell] Använd Steam API för spelkatalog (sökning, detaljer, genrer — ingen server krävs)",
+    "self_hosted_use_reviews": "Använd self-hosted server för recensioner",
+    "self_hosted_use_hltb": "Använd self-hosted server för HowLongToBeat",
+    "self_hosted_use_protondb": "Använd self-hosted server för ProtonDB",
+    "self_hosted_change_password": "Ändra lösenord / hantera konto",
+    "self_hosted_import_hydra_cloud": "Importera från Hydra Cloud",
+    "self_hosted_importing": "Importerar..."
   },
   "notifications": {
     "download_complete": "Nedladdning klar",

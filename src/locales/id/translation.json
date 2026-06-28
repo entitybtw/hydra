@@ -865,7 +865,18 @@
     "big_picture_enable_sounds": "Aktifkan suara Big Picture",
     "big_picture_enable_virtual_keyboard": "Aktifkan papan ketik virtual",
     "big_picture_enable_diagnostics": "Aktifkan diagnostik navigasi",
-    "big_picture_diagnostics_position": "Posisi diagnostik"
+    "big_picture_diagnostics_position": "Posisi diagnostik",
+    "self_hosted_api": "Self-Hosted API",
+    "enable_self_hosted_api": "Aktifkan Self-Hosted API",
+    "self_hosted_api_url": "URL API",
+    "self_hosted_api_token": "Token akses",
+    "self_hosted_use_steam_catalogue": "[Eksperimental] Gunakan Steam API untuk katalog game (pencarian, detail, genre — tanpa server)",
+    "self_hosted_use_reviews": "Gunakan server self-hosted untuk ulasan",
+    "self_hosted_use_hltb": "Gunakan server self-hosted untuk HowLongToBeat",
+    "self_hosted_use_protondb": "Gunakan server self-hosted untuk ProtonDB",
+    "self_hosted_change_password": "Ubah kata sandi / kelola akun",
+    "self_hosted_import_hydra_cloud": "Impor dari Hydra Cloud",
+    "self_hosted_importing": "Mengimpor..."
   },
   "notifications": {
     "download_complete": "Unduhan selesai",

@@ -766,7 +766,18 @@
     "proton_version_auto": "Auto (global default or umu default)",
     "proton_source_umu_default": "umu default selection",
     "proton_source_steam": "Installed by Steam",
-    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d"
+    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d",
+    "self_hosted_api": "Self-Hosted API",
+    "enable_self_hosted_api": "Povolit self-hosted API",
+    "self_hosted_api_url": "URL API",
+    "self_hosted_api_token": "Přístupový token",
+    "self_hosted_use_steam_catalogue": "[Experimentální] Použít Steam API pro katalog her (vyhledávání, detaily, žánry — bez serveru)",
+    "self_hosted_use_reviews": "Použít self-hosted server pro recenze",
+    "self_hosted_use_hltb": "Použít self-hosted server pro HowLongToBeat",
+    "self_hosted_use_protondb": "Použít self-hosted server pro ProtonDB",
+    "self_hosted_change_password": "Změnit heslo / spravovat účet",
+    "self_hosted_import_hydra_cloud": "Importovat z Hydra Cloud",
+    "self_hosted_importing": "Importování..."
   },
   "notifications": {
     "download_complete": "Stahování dokončeno",

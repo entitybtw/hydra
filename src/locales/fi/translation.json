@@ -766,7 +766,18 @@
     "proton_version_auto": "Auto (global default or umu default)",
     "proton_source_umu_default": "umu default selection",
     "proton_source_steam": "Installed by Steam",
-    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d"
+    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d",
+    "self_hosted_api": "Self-Hosted API",
+    "enable_self_hosted_api": "Ota self-hosted API käyttöön",
+    "self_hosted_api_url": "API URL",
+    "self_hosted_api_token": "Käyttöoikeustunnus",
+    "self_hosted_use_steam_catalogue": "[Kokeellinen] Käytä Steam API:a peliluetteloon (haku, tiedot, genret — ei palvelinta tarvita)",
+    "self_hosted_use_reviews": "Käytä self-hosted palvelinta arvosteluihin",
+    "self_hosted_use_hltb": "Käytä self-hosted palvelinta HowLongToBeat-palveluun",
+    "self_hosted_use_protondb": "Käytä self-hosted palvelinta ProtonDB-palveluun",
+    "self_hosted_change_password": "Vaihda salasana / hallitse tiliä",
+    "self_hosted_import_hydra_cloud": "Tuo Hydra Cloudista",
+    "self_hosted_importing": "Tuodaan..."
   },
   "notifications": {
     "download_complete": "Lataus valmis",

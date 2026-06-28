@@ -766,7 +766,18 @@
     "proton_version_auto": "Auto (global default or umu default)",
     "proton_source_umu_default": "umu default selection",
     "proton_source_steam": "Installed by Steam",
-    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d"
+    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d",
+    "self_hosted_api": "Self-Hosted API",
+    "enable_self_hosted_api": "Активиране на self-hosted API",
+    "self_hosted_api_url": "URL на API",
+    "self_hosted_api_token": "Токен за достъп",
+    "self_hosted_use_steam_catalogue": "[Експериментално] Използване на Steam API за каталог с игри (търсене, детайли, жанрове — без нужда от сървър)",
+    "self_hosted_use_reviews": "Използване на self-hosted сървър за рецензии",
+    "self_hosted_use_hltb": "Използване на self-hosted сървър за HowLongToBeat",
+    "self_hosted_use_protondb": "Използване на self-hosted сървър за ProtonDB",
+    "self_hosted_change_password": "Промяна на парола / управление на акаунт",
+    "self_hosted_import_hydra_cloud": "Импортиране от Hydra Cloud",
+    "self_hosted_importing": "Импортиране..."
   },
   "notifications": {
     "download_complete": "Изтеглянето завърши",

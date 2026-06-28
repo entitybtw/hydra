@@ -766,7 +766,18 @@
     "proton_version_auto": "Auto (global default or umu default)",
     "proton_source_umu_default": "umu default selection",
     "proton_source_steam": "Installed by Steam",
-    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d"
+    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d",
+    "self_hosted_api": "Self-Hosted API",
+    "enable_self_hosted_api": "Self-Hosted API'yi etkinleştir",
+    "self_hosted_api_url": "API URL",
+    "self_hosted_api_token": "Erişim tokenı",
+    "self_hosted_use_steam_catalogue": "[Deneysel] Oyun kataloğu için Steam API kullan (arama, ayrıntılar, türler — sunucu gerekmez)",
+    "self_hosted_use_reviews": "İncelemeler için self-hosted sunucu kullan",
+    "self_hosted_use_hltb": "HowLongToBeat için self-hosted sunucu kullan",
+    "self_hosted_use_protondb": "ProtonDB için self-hosted sunucu kullan",
+    "self_hosted_change_password": "Şifreyi değiştir / hesabı yönet",
+    "self_hosted_import_hydra_cloud": "Hydra Cloud'dan içe aktar",
+    "self_hosted_importing": "İçe aktarılıyor..."
   },
   "notifications": {
     "download_complete": "İndirme tamamlandı",

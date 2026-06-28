@@ -1004,7 +1004,18 @@
     "proton_version_auto": "Auto (global default or umu default)",
     "proton_source_umu_default": "umu default selection",
     "proton_source_steam": "Installed by Steam",
-    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d"
+    "proton_source_compatibility_tools": "Installed in Steam compatibilitytools.d",
+    "self_hosted_api": "Self-Hosted API",
+    "enable_self_hosted_api": "Omogoči self-hosted API",
+    "self_hosted_api_url": "URL API",
+    "self_hosted_api_token": "Dostopni žeton",
+    "self_hosted_use_steam_catalogue": "[Eksperimentalno] Uporabi Steam API za katalog iger (iskanje, podrobnosti, žanri — brez strežnika)",
+    "self_hosted_use_reviews": "Uporabi self-hosted strežnik za ocene",
+    "self_hosted_use_hltb": "Uporabi self-hosted strežnik za HowLongToBeat",
+    "self_hosted_use_protondb": "Uporabi self-hosted strežnik za ProtonDB",
+    "self_hosted_change_password": "Spremeni geslo / upravljaj račun",
+    "self_hosted_import_hydra_cloud": "Uvozi iz Hydra Cloud",
+    "self_hosted_importing": "Uvažanje..."
   },
   "notifications": {
     "download_complete": "Download complete",

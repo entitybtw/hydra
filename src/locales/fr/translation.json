@@ -1154,7 +1154,18 @@
     "big_picture_enable_sounds": "Activer les sons de Big Picture",
     "big_picture_enable_virtual_keyboard": "Activer le clavier virtuel",
     "big_picture_enable_diagnostics": "Activer les diagnostics de navigation",
-    "big_picture_diagnostics_position": "Position des diagnostics"
+    "big_picture_diagnostics_position": "Position des diagnostics",
+    "self_hosted_api": "Self-Hosted API",
+    "enable_self_hosted_api": "Activer le Self-Hosted API",
+    "self_hosted_api_url": "URL de l'API",
+    "self_hosted_api_token": "Jeton d'accès",
+    "self_hosted_use_steam_catalogue": "[Expérimental] Utiliser Steam API pour le catalogue de jeux (recherche, détails, genres — aucun serveur requis)",
+    "self_hosted_use_reviews": "Utiliser le serveur auto-hébergé pour les avis",
+    "self_hosted_use_hltb": "Utiliser le serveur auto-hébergé pour HowLongToBeat",
+    "self_hosted_use_protondb": "Utiliser le serveur auto-hébergé pour ProtonDB",
+    "self_hosted_change_password": "Changer le mot de passe / gérer le compte",
+    "self_hosted_import_hydra_cloud": "Importer depuis Hydra Cloud",
+    "self_hosted_importing": "Importation en cours..."
   },
   "classics_onboarding": {
     "title": "Bienvenue dans Hydra Classics",
