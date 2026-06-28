@@ -9,11 +9,11 @@ import {
   FocusItem,
   GridFocusGroup,
   Input,
-  Modal,
   Tabs,
   type TabsItem,
   VerticalFocusGroup,
 } from "../../../common";
+import { Modal } from "../../../common/modal";
 import { resolvePreferredGameAssets } from "../../../../helpers";
 import { SettingsSection } from "../../../../pages/settings/settings-section";
 import { useBigPictureToast } from "../../../../hooks";
