@@ -430,9 +430,7 @@ export class HydraApi {
           }
         : null;
     } else if (this.selfHostedConfig.userToken) {
-      // Self-hosted with userToken — sync library on startup
-      const { uploadGamesBatch } = await import("./library-sync");
-      await clearGamesRemoteIds();
+      // Self-hosted with userToken — sync library on startup (no remoteId clear needed every boot)
       void uploadGamesBatch();
     }
   }
