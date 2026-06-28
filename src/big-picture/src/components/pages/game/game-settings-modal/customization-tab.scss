@@ -143,3 +143,132 @@
     color: var(--primary);
   }
 }
+
+.game-customization-settings-tab__sgdb-btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--muted-foreground);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  align-self: flex-start;
+
+  &:hover,
+  &:focus-visible,
+  &[data-focus-visible="true"] {
+    outline: none;
+    border-color: var(--primary);
+    color: var(--foreground);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.sgdb-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 560px;
+  max-width: 720px;
+
+  &__search-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+
+    > :first-child {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  &__search-input {
+    flex: 1;
+  }
+
+  &__status {
+    text-align: center;
+    color: var(--muted-foreground);
+    font-size: 14px;
+    padding: 24px 0;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    max-height: 360px;
+    overflow-y: auto;
+    padding-right: 4px;
+
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.15);
+      border-radius: 4px;
+    }
+  }
+
+  &__item {
+    position: relative;
+    appearance: none;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    background-image:
+      linear-gradient(45deg, rgba(255,255,255,0.04) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(255,255,255,0.04) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.04) 75%),
+      linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.04) 75%);
+    background-size: 10px 10px;
+    background-position: 0 0, 0 5px, 5px -5px, -5px 0;
+    overflow: hidden;
+    cursor: pointer;
+    padding: 0;
+    aspect-ratio: 4/3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s;
+
+    &:hover,
+    &:focus-visible,
+    &[data-focus-visible="true"] {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    &:disabled {
+      cursor: default;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+  }
+
+  &__item-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    border-radius: 4px;
+  }
+}
