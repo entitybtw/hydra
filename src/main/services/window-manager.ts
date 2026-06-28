@@ -288,29 +288,15 @@ export class WindowManager {
     this.loadMainWindowURL(initialHash);
     this.mainWindow.removeMenu();
 
-    let shown = false;
-    const showMain = () => {
-      if (shown || !WindowManager.mainWindow || WindowManager.mainWindow.isDestroyed()) return;
-      shown = true;
-      if (userPreferences?.launchInBigPicture) {
-        void WindowManager.openBigPictureWindow();
-      } else {
-        WindowManager.mainWindow.show();
-      }
-    };
-
     this.mainWindow.on("ready-to-show", () => {
       if (!app.isPackaged || isStaging)
         WindowManager.mainWindow?.webContents.openDevTools();
-      showMain();
+      if (userPreferences?.launchInBigPicture) {
+        void WindowManager.openBigPictureWindow();
+      } else {
+        WindowManager.mainWindow?.show();
+      }
     });
-
-    // Fallback: if renderer crashes or ready-to-show never fires, show after 10s
-    this.mainWindow.webContents.on("render-process-gone", () => {
-      shown = true; // prevent double-show
-      WindowManager.mainWindow?.show();
-    });
-    setTimeout(() => showMain(), 10_000);
 
     this.mainWindow.on("close", async () => {
       const mainWindow = this.mainWindow;
@@ -408,17 +394,6 @@ export class WindowManager {
       this.bigPicture?.show();
       this.bigPicture?.setFullScreen(true);
       this.bigPicture?.focus();
-    });
-
-    // If BP renderer crashes, recover the main window
-    this.bigPicture.webContents.on("render-process-gone", () => {
-      const main = this.mainWindow;
-      if (main && !main.isDestroyed()) {
-        main.setOpacity(1);
-        main.show();
-        main.focus();
-      }
-      this.bigPicture = null;
     });
 
     this.bigPicture.on("closed", () => {
