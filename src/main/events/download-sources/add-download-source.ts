@@ -3,7 +3,6 @@ import { HydraApi } from "@main/services/hydra-api";
 import { downloadSourcesSublevel } from "@main/level";
 import type { DownloadSource } from "@types";
 import { logger } from "@main/services";
-import { net } from "electron";
 import crypto from "node:crypto";
 
 const addDownloadSource = async (
@@ -21,16 +20,11 @@ const addDownloadSource = async (
     let downloadSource: DownloadSource;
 
     if (HydraApi.isSelfHostedAuthenticated()) {
-      const response = await net.fetch(url, {
-        headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" },
-      });
-      if (!response.ok) throw new Error(`Failed to fetch source: ${response.status}`);
-      const data = await response.json() as any;
       downloadSource = {
         id: crypto.randomUUID(),
         url,
-        name: data.name ?? url,
-        downloadCount: data.downloads?.length ?? 0,
+        name: url,
+        downloadCount: 0,
         status: 1,
         createdAt: new Date().toISOString(),
       } as unknown as DownloadSource;
