@@ -196,7 +196,7 @@ export function SelfHostedSection({ upTarget, downTarget }: Readonly<Props>) {
           <div style={{ display: "flex", gap: 8 }}>
             <Button
               type="button"
-              variant="outline"
+              variant="tertiary"
               focusId={F.DASHBOARD}
               focusNavigationOverrides={nav(F.TOKEN, F.IMPORT)}
               onClick={() => globalThis.window.electron.openSelfHostedDashboard()}
@@ -206,7 +206,7 @@ export function SelfHostedSection({ upTarget, downTarget }: Readonly<Props>) {
 
             <Button
               type="button"
-              variant="outline"
+              variant="tertiary"
               loading={importing}
               focusId={F.IMPORT}
               focusNavigationOverrides={nav(F.TOKEN, F.CATALOGUE, { left: { type: "item", itemId: F.DASHBOARD } })}
