@@ -21,7 +21,9 @@ const addDownloadSource = async (
     let downloadSource: DownloadSource;
 
     if (HydraApi.isSelfHostedAuthenticated()) {
-      const response = await net.fetch(url);
+      const response = await net.fetch(url, {
+        headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" },
+      });
       if (!response.ok) throw new Error(`Failed to fetch source: ${response.status}`);
       const data = await response.json() as any;
       downloadSource = {
