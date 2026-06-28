@@ -177,7 +177,7 @@ export const mergeWithRemoteGames = async () => {
             ? `https://shared.steamstatic.com/store_item_assets/steam/apps/${game.objectId}/library_600x900_2x.jpg`
             : null);
 
-        const mergedIconUrl = game.iconUrl ?? localGameShopAsset?.iconUrl;
+        const mergedIconUrl = localGameShopAsset?.iconUrl ?? game.iconUrl;
         const mergedHeroUrl =
           game.libraryHeroImageUrl ?? localGameShopAsset?.libraryHeroImageUrl;
 
