@@ -3,7 +3,6 @@ import { HydraApi } from "@main/services/hydra-api";
 import { downloadSourcesSublevel } from "@main/level";
 import type { DownloadSource } from "@types";
 import { logger } from "@main/services";
-import crypto from "node:crypto";
 
 const addDownloadSource = async (
   _event: Electron.IpcMainInvokeEvent,
@@ -17,26 +16,13 @@ const addDownloadSource = async (
       throw new Error("Download source with this URL already exists");
     }
 
-    let downloadSource: DownloadSource;
+    const downloadSource = await HydraApi.post<DownloadSource>(
+      "/download-sources",
+      { url },
+      { needsAuth: false }
+    );
 
-    if (HydraApi.isSelfHostedAuthenticated()) {
-      downloadSource = {
-        id: crypto.randomUUID(),
-        url,
-        name: url,
-        downloadCount: 0,
-        status: 1,
-        createdAt: new Date().toISOString(),
-      } as unknown as DownloadSource;
-    } else {
-      downloadSource = await HydraApi.post<DownloadSource>(
-        "/download-sources",
-        { url },
-        { needsAuth: false }
-      );
-    }
-
-    if (!HydraApi.isSelfHostedAuthenticated() && HydraApi.isLoggedIn() && HydraApi.hasActiveSubscription()) {
+    if (HydraApi.isLoggedIn() && HydraApi.hasActiveSubscription()) {
       try {
         await HydraApi.post("/profile/download-sources", { urls: [url] });
       } catch (error) {
