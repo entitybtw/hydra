@@ -41,11 +41,11 @@ const getLibrary = async (): Promise<LibraryGame[]> => {
         results
           .filter(([_key, game]) => game.isDeleted === false)
           .map(async ([key, game]) => {
-            const [download, gameAssets, achievements] = await Promise.all([
-              downloadsSublevel.get(key),
-              gamesShopAssetsSublevel.get(key),
-              gameAchievementsSublevel.get(key).catch(() => null),
-            ]);
+            const download = await downloadsSublevel.get(key);
+            const gameAssets = await gamesShopAssetsSublevel.get(key);
+            const achievements = await gameAchievementsSublevel
+              .get(key)
+              .catch(() => null);
 
             const validAchievementNames = new Set(
               achievements?.achievements?.map((a) =>
