@@ -69,7 +69,9 @@ export function UserProfileContextProvider({
   userId,
 }: Readonly<UserProfileContextProviderProps>) {
   const { userDetails } = useAppSelector((state) => state.userDetails);
-  const userPreferences = useAppSelector((state) => state.userPreferences.value);
+  const userPreferences = useAppSelector(
+    (state) => state.userPreferences.value
+  );
   const isSelfHosted = Boolean(userPreferences?.selfHostedApiUrl);
   const authUserId = userDetails?.id;
 
@@ -77,7 +79,10 @@ export function UserProfileContextProvider({
 
   useEffect(() => {
     if (isSelfHosted) {
-      window.electron.getOfficialProfile().then((p) => setOfficialUserId(p?.id ?? null)).catch(() => {});
+      window.electron
+        .getOfficialProfile()
+        .then((p) => setOfficialUserId(p?.id ?? null))
+        .catch(() => {});
     }
   }, [isSelfHosted]);
 
@@ -96,8 +101,11 @@ export function UserProfileContextProvider({
   const [isLoadingLibraryGames, setIsLoadingLibraryGames] = useState(false);
   const previousUserIdRef = useRef(userId);
 
-  const isMe = userProfile?.id === authUserId || (isSelfHosted && userProfile?.id === officialUserId);
-  const isMyOfficialProfile = isSelfHosted && userProfile?.id === officialUserId;
+  const isMe =
+    userProfile?.id === authUserId ||
+    (isSelfHosted && userProfile?.id === officialUserId);
+  const isMyOfficialProfile =
+    isSelfHosted && userProfile?.id === officialUserId;
 
   const getHeroBackgroundFromImageUrl = async (imageUrl: string) => {
     const output = await average(imageUrl, { amount: 1, format: "hex" });
@@ -242,7 +250,17 @@ export function UserProfileContextProvider({
       .get<UserProfile>(`/users/${userId}?${profileParams.toString()}`, {
         needsAuth: false,
       })
-      .then((userProfile) => {
+      .then(async (userProfile) => {
+        if (userProfile.recentGames?.length) {
+          const enriched = await Promise.all(
+            userProfile.recentGames.map(async (game) => {
+              if (game.iconUrl) return game;
+              const assets = await window.electron.getGameAssets(game.objectId, game.shop).catch(() => null);
+              return assets?.iconUrl ? { ...game, iconUrl: assets.iconUrl } : game;
+            })
+          );
+          userProfile = { ...userProfile, recentGames: enriched };
+        }
         setUserProfile(userProfile);
 
         if (userProfile.profileImageUrl) {
