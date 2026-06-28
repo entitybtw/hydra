@@ -38,6 +38,7 @@ export class HydraApi {
     "/games/",
     "/decky",
     "/auth/ws",
+    "/download-sources",
   ];
 
   private static readonly OFFICIAL_ONLY_SUFFIXES = ["/reviews"];
