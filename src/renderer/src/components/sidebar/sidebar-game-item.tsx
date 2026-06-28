@@ -5,7 +5,7 @@ import cn from "classnames";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { GameContextMenu } from "..";
-import { HeartFillIcon } from "@primer/octicons-react";
+import { HeartFillIcon, PinIcon } from "@primer/octicons-react";
 import { useAppSelector } from "@renderer/hooks";
 
 interface SidebarGameItemProps {
@@ -92,6 +92,10 @@ export function SidebarGameItem({
                 +{game.newDownloadOptionsCount}
               </span>
             )}
+
+          {game.isPinned && (
+            <PinIcon size={12} className="sidebar__game-favorite-icon" />
+          )}
 
           {game.favorite && (
             <HeartFillIcon size={12} className="sidebar__game-favorite-icon" />

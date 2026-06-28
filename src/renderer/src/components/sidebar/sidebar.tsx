@@ -68,7 +68,7 @@ export function Sidebar() {
   const location = useLocation();
 
   const sortedLibrary = useMemo(() => {
-    return sortBy(library, (game) => game.title);
+    return sortBy(library, [(game) => (game.isPinned ? 0 : 1), (game) => game.title]);
   }, [library]);
 
   const { hasActiveSubscription } = useUserDetails();
