@@ -358,6 +358,44 @@ export function useGameSettingsModalState({
     [game, refreshGameDetails, showErrorToast, t, updateCustomizationAsset]
   );
 
+  const handleSelectAssetFromSgdb = useCallback(
+    async (assetType: CustomAssetType) => {
+      if (!game) return;
+      const steamAppId = game.shop === "steam" ? game.objectId : null;
+      const results = await globalThis.window.electron
+        .searchSteamGridDb(game.title, assetType, steamAppId)
+        .catch(() => [] as { id: number; url: string; thumb: string }[]);
+      if (!results.length) {
+        showErrorToast("No results found on SteamGridDB");
+        return;
+      }
+      // Pick the first result automatically — user can switch in the renderer settings for full grid
+      const url = results[0].url;
+      try {
+        const res = await fetch(url);
+        const buffer = await res.arrayBuffer();
+        const ext = url.split("?")[0].split(".").pop() ?? "png";
+        const tempPath = await globalThis.window.electron.saveTempFile(
+          `sgdb-${assetType}-${Date.now()}.${ext}`,
+          new Uint8Array(buffer)
+        );
+        const copiedAssetUrl =
+          await globalThis.window.electron.copyCustomGameAsset(
+            tempPath,
+            assetType
+          );
+        await updateCustomizationAsset(assetType, copiedAssetUrl);
+        await refreshGameDetails();
+        await globalThis.window.electron.deleteTempFile?.(tempPath);
+      } catch (error) {
+        showErrorToast(
+          error instanceof Error ? error.message : t("edit_game_modal_failed")
+        );
+      }
+    },
+    [game, refreshGameDetails, showErrorToast, t, updateCustomizationAsset]
+  );
+
   useEffect(() => {
     if (launchOptionsDebounceRef.current !== null) {
       globalThis.window.clearTimeout(launchOptionsDebounceRef.current);
@@ -718,6 +756,7 @@ export function useGameSettingsModalState({
       onChangeGameTitle: handleChangeGameTitle,
       onBlurGameTitle: handleBlurGameTitle,
       onSelectAsset: handleSelectCustomizationAsset,
+      onSelectAssetFromSgdb: handleSelectAssetFromSgdb,
       onClearAsset: handleClearCustomizationAsset,
     } satisfies GameCustomizationSettingsProps;
   }, [
@@ -726,6 +765,7 @@ export function useGameSettingsModalState({
     handleBlurGameTitle,
     handleChangeGameTitle,
     handleClearCustomizationAsset,
+    handleSelectAssetFromSgdb,
     handleSelectCustomizationAsset,
     updatingGameTitle,
   ]);

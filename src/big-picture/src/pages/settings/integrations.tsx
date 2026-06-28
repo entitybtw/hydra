@@ -20,6 +20,8 @@ import {
   IntegrationProviderSection,
   type IntegrationProviderConfig,
 } from "./integration-provider-section";
+import { SelfHostedSection } from "./self-hosted-section";
+import { SteamGridDbSection } from "./steamgriddb-section";
 
 interface SettingsSectionProps {
   className?: string;
@@ -175,6 +177,26 @@ export function IntegrationsSettingsSection({
           />
         );
       })}
+
+      <SelfHostedSection
+        upTarget={
+          visibleProviders.length > 0
+            ? {
+                type: "item",
+                itemId: getIntegrationProviderCheckboxFocusId(
+                  visibleProviders[visibleProviders.length - 1]
+                    .id as IntegrationProviderId
+                ),
+              }
+            : SETTINGS_HEADER_RETURN_TARGET
+        }
+        downTarget={{ type: "item", itemId: "steamgriddb-input" }}
+      />
+
+      <SteamGridDbSection
+        upTarget={{ type: "item", itemId: "self-hosted-checkbox" }}
+        downTarget={{ type: "block" }}
+      />
     </div>
   );
 }

@@ -10,6 +10,7 @@ import {
   Tabs,
   type TabsItem,
   VerticalFocusGroup,
+  Button,
 } from "../../../common";
 import { resolvePreferredGameAssets } from "../../../../helpers";
 import { SettingsSection } from "../../../../pages/settings/settings-section";
@@ -43,6 +44,7 @@ export interface GameCustomizationSettingsProps {
   onChangeGameTitle: (event: ChangeEvent<HTMLInputElement>) => void;
   onBlurGameTitle: () => Promise<void>;
   onSelectAsset: (assetType: AssetTab) => Promise<void>;
+  onSelectAssetFromSgdb: (assetType: AssetTab) => Promise<void>;
   onClearAsset: (assetType: AssetTab) => Promise<void>;
 }
 
@@ -118,6 +120,7 @@ export function GameCustomizationSettingsTab({
   onChangeGameTitle,
   onBlurGameTitle,
   onSelectAsset,
+  onSelectAssetFromSgdb,
   onClearAsset,
 }: Readonly<GameCustomizationSettingsProps>) {
   const { t } = useTranslation("big_picture");
@@ -285,6 +288,25 @@ export function GameCustomizationSettingsTab({
                 </span>
               </button>
             </FocusItem>
+
+            {!hasCustomAsset && (
+              <Button
+                type="button"
+                variant="outline"
+                style={{ marginTop: 8, width: "100%" }}
+                onClick={() => {
+                  if (pendingAssetTab) return;
+                  setPendingAssetTab(selectedAssetTab);
+                  void onSelectAssetFromSgdb(selectedAssetTab).finally(() => {
+                    setPendingAssetTab((cur) =>
+                      cur === selectedAssetTab ? null : cur
+                    );
+                  });
+                }}
+              >
+                Browse SteamGridDB
+              </Button>
+            )}
           </div>
         </div>
       </SettingsSection>
