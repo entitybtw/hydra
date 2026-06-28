@@ -51,7 +51,7 @@ export function RecentGamesBox() {
               className="recent-games__list-item"
             >
               <img
-                src={game.iconUrl!}
+                src={game.iconUrl || game.libraryImageUrl!}
                 alt={game.title}
                 className="recent-games__game-image"
               />
