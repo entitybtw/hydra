@@ -17,6 +17,7 @@ import {
   PinIcon,
   PinSlashIcon,
   ImageIcon,
+  HeartFillIcon,
 } from "@primer/octicons-react";
 import { MAX_MINUTES_TO_SHOW_IN_PLAYTIME } from "@renderer/constants";
 import { Tooltip } from "react-tooltip";
@@ -183,10 +184,10 @@ export function UserLibraryGameCard({
                 <ClockIcon size={11} />
               )}
               <span className="user-library-game__playtime-long">
-                {formatPlayTime(game.playTimeInSeconds)}
+                {formatPlayTime(game.playTimeInMilliseconds / 1000)}
               </span>
               <span className="user-library-game__playtime-short">
-                {formatPlayTime(game.playTimeInSeconds, true)}
+                {formatPlayTime(game.playTimeInMilliseconds / 1000, true)}
               </span>
             </div>
 
@@ -284,6 +285,13 @@ export function UserLibraryGameCard({
             />
           )}
         </button>
+
+        {(game.isPinned || game.isFavorite) && (
+          <div className="user-library-game__badges">
+            {game.isPinned && <PinIcon size={11} />}
+            {game.isFavorite && <HeartFillIcon size={11} className="user-library-game__favorite-badge" />}
+          </div>
+        )}
       </li>
       <Tooltip
         id={game.objectId}
