@@ -14,34 +14,41 @@
 
 ## What this fork adds
 
-This is a fork of [hydralauncher/hydra](https://github.com/hydralauncher/hydra) that adds support for a self-hosted backend via [entitybtw/hydra-selfhosted](https://github.com/entitybtw/hydra-selfhosted).
+This is a fork of [hydralauncher/hydra](https://github.com/hydralauncher/hydra) with a self-hosted backend via [entitybtw/hydra-selfhosted](https://github.com/entitybtw/hydra-selfhosted).
 
-With a self-hosted instance you get:
+### Self-hosted backend
 
 - **Your own cloud saves** — save backups stored on your server, not Hydra Cloud
 - **Your own account** — register with a username and password on your server
 - **Public profile** — shareable profile page at `your-server/u/username` with playtime and game library
-- **Web dashboard** — manage your profile, accent color, and custom CSS from a browser or from inside the launcher
-- **Session control** — choose how long your session lasts and whether to sign out automatically when closing the app
-- **No subscription** — everything works without a Hydra Cloud subscription
+- **Web dashboard** — manage your profile, banner, avatar, accent color, and custom CSS from a browser
+- **No subscription** — everything works without a Hydra Cloud subscription; all cloud save slots are unlimited
+- **Session control** — configure session duration and auto sign-out behavior
 
-You can use the self-hosted account alongside your official Hydra account at the same time — the sidebar shows both.
+### Profile
+
+- **Pin & favorite games** — mark games as pinned or favorited; pinned games float to the top of the sidebar and your public profile
+- **Pin/favorite badges** — pinned and favorited games show icons in the library card view
+- **Recent activity** — public profile shows recently played games per tab (Hydra / Steam) with toggle and reorderable sections
+
+### SteamGridDB integration
+
+- **Custom game art** — browse and apply icons, logos, and hero banners directly from SteamGridDB in **Game Settings → Assets**
+- Searches by game title automatically; Steam games are matched by App ID for accurate results
+- Set your SteamGridDB API key once in **Settings → Integrations → SteamGridDB**
+
+### Other
+
+- Download sources always route through the official Hydra API (self-hosted instances do not interfere)
+- Sidebar sorts pinned games to the top
 
 ## Self-hosted setup
 
 1. Deploy [entitybtw/hydra-selfhosted](https://github.com/entitybtw/hydra-selfhosted) on your server
-2. In Hydra: **Settings → Self-Hosted API**
-3. Enter your server URL and API token
+2. In Hydra: **Settings → Integrations → Self-Hosted API**
+3. Enter your server URL and API token, click **Save**
 4. A login window opens — register or sign in
-5. Done — cloud saves and library sync to your server automatically
-
-## Features
-
-- Add games to your library
-- Profile with friends, achievements, and playtime
-- Cloud saves (Hydra Cloud or self-hosted)
-- Achievements tracking
-- Rich game catalogue with suggestions
+5. Cloud saves and library sync to your server automatically
 
 ## Build from source
 
