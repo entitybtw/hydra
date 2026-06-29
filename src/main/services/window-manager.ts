@@ -554,6 +554,10 @@ export class WindowManager {
       return;
     }
 
+    if (parentWindow.isMinimized()) parentWindow.restore();
+    if (!parentWindow.isVisible()) parentWindow.show();
+    parentWindow.focus();
+
     const authWindow = new BrowserWindow({
       width: this.AUTH_WINDOW_WIDTH,
       height: this.AUTH_WINDOW_HEIGHT,
