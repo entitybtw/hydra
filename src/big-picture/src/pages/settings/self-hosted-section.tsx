@@ -18,8 +18,6 @@ const F = {
   IMPORT: "self-hosted-import",
   CATALOGUE: "self-hosted-catalogue",
   REVIEWS: "self-hosted-reviews",
-  HLTB: "self-hosted-hltb",
-  PROTONDB: "self-hosted-protondb",
   SIGN_OUT: "self-hosted-signout",
   SELF_SIGN_OUT: "self-hosted-self-signout",
   SESSION: "self-hosted-session",
@@ -231,29 +229,9 @@ export function SelfHostedSection({ upTarget, downTarget }: Readonly<Props>) {
             label="Use self-hosted server for reviews"
             checked={Boolean(userPreferences?.useSelfHostedReviews)}
             focusId={F.REVIEWS}
-            navigationOverrides={nav(F.CATALOGUE, F.HLTB)}
+            navigationOverrides={nav(F.CATALOGUE, F.SIGN_OUT)}
             block
             onChange={(v) => pref("useSelfHostedReviews", v)}
-          />
-
-          <Checkbox
-            id="self-hosted-hltb"
-            label="Use self-hosted server for HowLongToBeat"
-            checked={Boolean(userPreferences?.useSelfHostedHltb)}
-            focusId={F.HLTB}
-            navigationOverrides={nav(F.REVIEWS, F.PROTONDB)}
-            block
-            onChange={(v) => pref("useSelfHostedHltb", v)}
-          />
-
-          <Checkbox
-            id="self-hosted-protondb"
-            label="Use self-hosted server for ProtonDB"
-            checked={Boolean(userPreferences?.useSelfHostedProtondb)}
-            focusId={F.PROTONDB}
-            navigationOverrides={nav(F.HLTB, F.SIGN_OUT)}
-            block
-            onChange={(v) => pref("useSelfHostedProtondb", v)}
           />
 
           <Checkbox
@@ -261,7 +239,7 @@ export function SelfHostedSection({ upTarget, downTarget }: Readonly<Props>) {
             label="Sign out of official account when closing the app"
             checked={Boolean(userPreferences?.signOutOnExit)}
             focusId={F.SIGN_OUT}
-            navigationOverrides={nav(F.PROTONDB, F.SELF_SIGN_OUT)}
+            navigationOverrides={nav(F.REVIEWS, F.SELF_SIGN_OUT)}
             block
             onChange={(v) => pref("signOutOnExit", v)}
           />

@@ -126,18 +126,6 @@ export function SettingsSelfHosted() {
               checked={Boolean(userPreferences?.useSelfHostedReviews)}
               onChange={(e) => updateUserPreferences({ useSelfHostedReviews: e.target.checked })}
             />
-
-            <CheckboxField
-              label={t("self_hosted_use_hltb")}
-              checked={Boolean(userPreferences?.useSelfHostedHltb)}
-              onChange={(e) => updateUserPreferences({ useSelfHostedHltb: e.target.checked })}
-            />
-
-            <CheckboxField
-              label={t("self_hosted_use_protondb")}
-              checked={Boolean(userPreferences?.useSelfHostedProtondb)}
-              onChange={(e) => updateUserPreferences({ useSelfHostedProtondb: e.target.checked })}
-            />
           </div>
 
           <Button

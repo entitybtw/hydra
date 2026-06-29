@@ -7,6 +7,8 @@ import {
   steamCatalogueCategory,
   steamSearchSuggestions,
 } from "@main/services/steam-catalogue";
+import axios from "axios";
+import type { HowLongToBeatCategory } from "@types";
 
 interface HydraApiCallPayload {
   method: "get" | "post" | "put" | "patch" | "delete";
@@ -18,6 +20,51 @@ interface HydraApiCallPayload {
     needsSubscription?: boolean;
     ifModifiedSince?: Date;
   };
+}
+
+const hltbCache = new Map<string, HowLongToBeatCategory[] | null>();
+
+async function fetchHltbDirect(shop: string, objectId: string): Promise<HowLongToBeatCategory[] | null> {
+  const cacheKey = `${shop}:${objectId}`;
+  if (hltbCache.has(cacheKey)) return hltbCache.get(cacheKey)!;
+
+  const steamRes = await axios.get("https://store.steampowered.com/api/appdetails", {
+    params: { appids: objectId, l: "english", cc: "us" },
+    timeout: 8000,
+  }).catch(() => null);
+  const appData = steamRes?.data?.[objectId];
+  if (!appData?.success) { hltbCache.set(cacheKey, null); return null; }
+
+  const name = appData.data?.name;
+  if (!name) { hltbCache.set(cacheKey, null); return null; }
+
+  const res = await axios.post("https://howlongtobeat.com/api/search", {
+    searchType: "games", searchTerms: name.split(" "), searchPage: 1, size: 1,
+    searchOptions: {
+      games: { userId: 0, platform: "", sortCategory: "popular", rangeCategory: "main", rangeTime: { min: 0, max: 0 }, gameplay: { perspective: "", flow: "", genre: "" }, modifier: "" },
+      filter: "", sort: 0, randomizer: 0,
+    },
+  }, {
+    headers: { "Content-Type": "application/json", "Referer": "https://howlongtobeat.com", "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" },
+    timeout: 10000,
+  }).catch(() => null);
+
+  const game = res?.data?.data?.[0];
+  if (!game) { hltbCache.set(cacheKey, null); return null; }
+
+  const fmt = (secs: number) => secs < 3600 ? `${Math.round(secs / 60)} Mins` : `${Math.round(secs / 3600)} Hours`;
+  const categories: HowLongToBeatCategory[] = [];
+  if (game.comp_main) categories.push({ title: "Main Story", duration: fmt(game.comp_main), accuracy: "average" });
+  if (game.comp_plus) categories.push({ title: "Main + Extras", duration: fmt(game.comp_plus), accuracy: "average" });
+  if (game.comp_100) categories.push({ title: "Completionist", duration: fmt(game.comp_100), accuracy: "average" });
+
+  hltbCache.set(cacheKey, categories.length ? categories : null);
+  return categories.length ? categories : null;
+}
+
+async function fetchProtondbDirect(objectId: string) {
+  const res = await axios.get(`https://www.protondb.com/api/v1/reports/summaries/${objectId}.json`, { timeout: 8000 }).catch(() => null);
+  return res?.data ?? null;
 }
 
 const hydraApiCall = async (
@@ -38,14 +85,17 @@ const hydraApiCall = async (
   try {
     let request: Promise<unknown>;
 
+    const hltbMatch = url.match(/^\/games\/([^/]+)\/([^/]+)\/how-long-to-beat/);
+    const protondbMatch = url.match(/^\/games\/([^/]+)\/([^/]+)\/protondb/);
     const isReviewsUrl = url.match(/^\/games\/[^/]+\/[^/]+\/reviews/) !== null;
-    const isHltbUrl = url.match(/^\/games\/[^/]+\/[^/]+\/how-long-to-beat/) !== null;
-    const isProtondbUrl = url.match(/^\/games\/[^/]+\/[^/]+\/protondb/) !== null;
-    const isGameDataUrl = isReviewsUrl || isHltbUrl || isProtondbUrl;
 
-    const gameDataFlag = isReviewsUrl ? HydraApi.useSelfHostedReviews
-      : isHltbUrl ? HydraApi.useSelfHostedHltb
-      : HydraApi.useSelfHostedProtondb;
+    if (hltbMatch) {
+      return fetchHltbDirect(hltbMatch[1], hltbMatch[2]);
+    }
+
+    if (protondbMatch) {
+      return fetchProtondbDirect(protondbMatch[2]);
+    }
 
     // Steam catalogue — runs client-side via net.fetch, no self-hosted needed
     const steamIdMatch = url.match(/^\/games\/steam\/(\d+)$/);
@@ -69,7 +119,7 @@ const hydraApiCall = async (
       } else {
         request = HydraApi.get(url, params, options);
       }
-    } else if (isGameDataUrl && gameDataFlag) {
+    } else if (isReviewsUrl && HydraApi.useSelfHostedReviews) {
       switch (method) {
         case "get": request = HydraApi.gameDataGet(url, params); break;
         case "post": request = HydraApi.gameDataPost(url, data); break;
