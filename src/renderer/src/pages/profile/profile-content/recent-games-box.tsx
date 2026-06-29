@@ -18,7 +18,9 @@ export function RecentGamesBox() {
 
   const formatPlayTime = useCallback(
     (game: UserGame) => {
-      const seconds = (game?.playTimeInMilliseconds ?? 0) / 1000;
+      const seconds = game.playTimeInMilliseconds != null
+        ? game.playTimeInMilliseconds / 1000
+        : (game.playTimeInSeconds ?? 0);
       const minutes = seconds / 60;
 
       if (minutes < MAX_MINUTES_TO_SHOW_IN_PLAYTIME) {

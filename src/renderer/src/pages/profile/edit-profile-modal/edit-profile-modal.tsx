@@ -28,7 +28,9 @@ interface FormValues {
 }
 
 export function EditProfileModal(
-  props: Omit<ModalProps, "children" | "title"> & { isOfficialProfile?: boolean }
+  props: Omit<ModalProps, "children" | "title"> & {
+    isOfficialProfile?: boolean;
+  }
 ) {
   const { isOfficialProfile, ...modalProps } = props;
   const { t } = useTranslation("user_profile");
@@ -61,7 +63,10 @@ export function EditProfileModal(
     useUserDetails();
 
   const effectiveDetails = isOfficialProfile
-    ? { displayName: userProfile?.displayName ?? "", profileImageUrl: userProfile?.profileImageUrl ?? null }
+    ? {
+        displayName: userProfile?.displayName ?? "",
+        profileImageUrl: userProfile?.profileImageUrl ?? null,
+      }
     : userDetails;
 
   useEffect(() => {
@@ -74,7 +79,8 @@ export function EditProfileModal(
 
   const onSubmit = async (values: FormValues) => {
     if (isOfficialProfile) {
-      return window.electron.updateProfile(values)
+      return window.electron
+        .updateProfile(values)
         .then(async () => {
           await getUserProfile();
           modalProps.onClose();
@@ -96,7 +102,11 @@ export function EditProfileModal(
   };
 
   return (
-    <Modal {...modalProps} title={t("edit_profile")} clickOutsideToClose={false}>
+    <Modal
+      {...modalProps}
+      title={t("edit_profile")}
+      clickOutsideToClose={false}
+    >
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="edit-profile-modal__form"

@@ -45,8 +45,14 @@ export function ProfileHero() {
   const [isCopyButtonHovered, setIsCopyButtonHovered] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
-  const { isMe, isMyOfficialProfile, getUserProfile, userProfile, heroBackground, backgroundImage } =
-    useContext(userProfileContext);
+  const {
+    isMe,
+    isMyOfficialProfile,
+    getUserProfile,
+    userProfile,
+    heroBackground,
+    backgroundImage,
+  } = useContext(userProfileContext);
   const {
     signOut,
     updateFriendRequestState,

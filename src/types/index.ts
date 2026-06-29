@@ -87,6 +87,7 @@ export type UserGame = {
   shop: GameShop;
   title: string;
   playTimeInSeconds: number;
+  playTimeInMilliseconds?: number;
   lastTimePlayed: Date | null;
   unlockedAchievementCount: number;
   achievementCount: number;

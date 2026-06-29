@@ -28,8 +28,13 @@ export function UploadBackgroundImageButton() {
 
   const { t } = useTranslation("user_profile");
 
-  const { isMe, isMyOfficialProfile, setSelectedBackgroundImage, userProfile, getUserProfile } =
-    useContext(userProfileContext);
+  const {
+    isMe,
+    isMyOfficialProfile,
+    setSelectedBackgroundImage,
+    userProfile,
+    getUserProfile,
+  } = useContext(userProfileContext);
   const { patchUser, fetchUserDetails } = useUserDetails();
 
   const { showSuccessToast, showErrorToast } = useToast();

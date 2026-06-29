@@ -35,7 +35,9 @@ export const uploadGamesBatch = async () => {
           isPinned: game.isPinned ?? false,
         };
       })
-    ).catch((e) => { logger.error("uploadGamesBatch error:", e.message); });
+    ).catch((e) => {
+      logger.error("uploadGamesBatch error:", e.message);
+    });
   }
 
   await mergeWithRemoteGames();
