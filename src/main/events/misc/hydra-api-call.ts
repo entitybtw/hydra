@@ -23,6 +23,7 @@ interface HydraApiCallPayload {
 }
 
 const hltbCache = new Map<string, HowLongToBeatCategory[] | null>();
+const HLTB_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";
 
 async function fetchHltbDirect(shop: string, objectId: string): Promise<HowLongToBeatCategory[] | null> {
   const cacheKey = `${shop}:${objectId}`;
@@ -38,14 +39,27 @@ async function fetchHltbDirect(shop: string, objectId: string): Promise<HowLongT
   const name = appData.data?.name;
   if (!name) { hltbCache.set(cacheKey, null); return null; }
 
-  const res = await axios.post("https://howlongtobeat.com/api/search", {
+  const initHeaders = { "User-Agent": HLTB_UA, "Referer": "https://howlongtobeat.com" };
+  const auth = await axios.get(`https://howlongtobeat.com/api/bleed/init?t=${Date.now()}`, {
+    headers: initHeaders, timeout: 8000,
+  }).catch(() => null);
+
+  if (!auth?.data?.token) { hltbCache.set(cacheKey, null); return null; }
+  const { token, hpKey, hpVal } = auth.data;
+
+  const res = await axios.post("https://howlongtobeat.com/api/bleed", {
+    [hpKey]: hpVal,
     searchType: "games", searchTerms: name.split(" "), searchPage: 1, size: 1,
     searchOptions: {
       games: { userId: 0, platform: "", sortCategory: "popular", rangeCategory: "main", rangeTime: { min: 0, max: 0 }, gameplay: { perspective: "", flow: "", genre: "" }, modifier: "" },
       filter: "", sort: 0, randomizer: 0,
     },
   }, {
-    headers: { "Content-Type": "application/json", "Referer": "https://howlongtobeat.com", "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" },
+    headers: {
+      "Content-Type": "application/json", "Accept": "*/*",
+      "User-Agent": HLTB_UA, "Referer": "https://howlongtobeat.com",
+      "X-Auth-Token": token, "X-Hp-Key": hpKey, "X-Hp-Val": hpVal,
+    },
     timeout: 10000,
   }).catch(() => null);
 
