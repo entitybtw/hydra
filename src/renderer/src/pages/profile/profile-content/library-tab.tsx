@@ -1,3 +1,4 @@
+import Skeleton from "react-loading-skeleton";
 import { useTranslation } from "react-i18next";
 import {
   TelescopeIcon,
@@ -16,12 +17,13 @@ import { useCollectionContextMenu } from "@renderer/context";
 import { GameContextMenu } from "@renderer/components";
 import type { GameContextMenuGame } from "@renderer/components/game-context-menu/game-context-menu.types";
 import { ClassicsIcon } from "@renderer/pages/library/category-filter";
+import type { ProfilePlatformFilter } from "@renderer/helpers";
 import { FilterDropdown, type FilterDropdownOption } from "./filter-dropdown";
 import { UserLibraryGameCard } from "./user-library-game-card";
 import "./profile-content.scss";
 
 type SortOption = "playtime" | "achievementCount" | "playedRecently";
-export type ProfilePlatform = "all" | "pc" | "classics";
+export type ProfilePlatform = ProfilePlatformFilter;
 
 interface LibraryTabProps {
   sortBy: SortOption;
@@ -31,6 +33,7 @@ interface LibraryTabProps {
   pinnedGames: UserGame[];
   libraryGames: UserGame[];
   hasMoreLibraryGames: boolean;
+  isAwaitingInitialLibrary: boolean;
   statsIndex: number;
   userStats: { libraryCount: number } | null;
   onLoadMore: () => void;
@@ -49,6 +52,7 @@ export function LibraryTab({
   pinnedGames,
   libraryGames,
   hasMoreLibraryGames,
+  isAwaitingInitialLibrary,
   statsIndex,
   userStats,
   onLoadMore,
@@ -58,7 +62,7 @@ export function LibraryTab({
   panelKey = "library",
   count,
 }: Readonly<LibraryTabProps>) {
-  const { t } = useTranslation("user_profile");
+  const { t } = useTranslation(["user_profile", "library"]);
   const { numberFormatter } = useFormat();
   const { library } = useLibrary();
   const { openCollectionContextMenu } = useCollectionContextMenu();
@@ -192,7 +196,17 @@ export function LibraryTab({
         )}
       </div>
 
-      {!hasAnyGames && (
+      {isAwaitingInitialLibrary && (
+        <ul className="profile-content__games-grid">
+          {Array.from({ length: 12 }).map((_, index) => (
+            <li key={index} style={{ listStyle: "none" }}>
+              <Skeleton className="profile-content__game-skeleton" />
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {!isAwaitingInitialLibrary && !hasAnyGames && (
         <div className="profile-content__no-games">
           <div className="profile-content__telescope-icon">
             <TelescopeIcon size={24} />
@@ -202,7 +216,7 @@ export function LibraryTab({
         </div>
       )}
 
-      {hasAnyGames && (
+      {!isAwaitingInitialLibrary && hasAnyGames && (
         <div>
           {hasPinnedGames && (
             <div style={{ marginBottom: "2rem" }}>

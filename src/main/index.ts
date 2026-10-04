@@ -1,4 +1,11 @@
-import { app, BrowserWindow, net, powerMonitor, protocol } from "electron";
+import {
+  app,
+  BrowserWindow,
+  crashReporter,
+  net,
+  powerMonitor,
+  protocol,
+} from "electron";
 import updater from "electron-updater";
 import i18n from "i18next";
 import path from "node:path";
@@ -13,15 +20,30 @@ import {
   PowerSaveBlockerManager,
   DownloadOrchestrator,
   SSEClient,
+  emulators,
 } from "@main/services";
 import resources from "@locales";
-import { PythonRPC } from "./services/python-rpc";
+import { TorrentService } from "./services/torrent-service";
 import { db, gamesSublevel, levelKeys } from "./level";
 import { GameShop, UserPreferences } from "@types";
 import { launchGame, openClassicsGame } from "./helpers";
 import { refreshPortableShortcutLauncher } from "./helpers/shortcut-launch";
 import { lookupCachedPlatform } from "./events/library/get-library";
 import { loadState } from "./main";
+import {
+  closeSteamOpenIdWindow,
+  notifySteamConnectError,
+  notifySteamConnected,
+} from "./services/steam-integration/steam-store-session";
+import {
+  completeSteamOpenIdConnection,
+  parseSteamOpenIdReturn,
+} from "./services/steam-integration/steam-openid-return";
+import { steamSyncOrchestrator } from "./services/steam-integration/steam-sync-orchestrator";
+
+crashReporter.start({
+  uploadToServer: false,
+});
 
 const { autoUpdater } = updater;
 
@@ -86,7 +108,10 @@ if (process.defaultApp) {
 // often overwrites the first's MimeType on Linux)
 if (process.platform === "linux") {
   try {
-    const desktopDir = path.join(app.getPath("home"), ".local/share/applications");
+    const desktopDir = path.join(
+      app.getPath("home"),
+      ".local/share/applications"
+    );
     const desktopName = `${app.getName().toLowerCase()}.desktop`;
     const desktopPath = path.join(desktopDir, desktopName);
     // Also check for Electron-generated files with hash suffix
@@ -137,6 +162,8 @@ if (process.platform === "linux") {
 const initializeApp = async () => {
   refreshPortableShortcutLauncher();
   electronApp.setAppUserModelId("gg.hydralauncher.hydra");
+
+  logger.info("Crash dumps directory", app.getPath("crashDumps"));
 
   protocol.handle("local", (request) => {
     const filePath = request.url.slice("local:".length);
@@ -254,6 +281,23 @@ app.on("browser-window-created", (_, window) => {
   optimizer.watchWindowShortcuts(window);
 });
 
+app.on("child-process-gone", (_event, details) => {
+  logger.error("Child process gone", {
+    type: details.type,
+    reason: details.reason,
+    exitCode: details.exitCode,
+    serviceName: details.serviceName,
+    name: details.name,
+  });
+});
+
+app.on("render-process-gone", (_event, _webContents, details) => {
+  logger.error("Render process gone", {
+    reason: details.reason,
+    exitCode: details.exitCode,
+  });
+});
+
 const handleRunGame = async (shop: GameShop, objectId: string) => {
   const gameKey = levelKeys.game(shop, objectId);
   const game = await gamesSublevel.get(gameKey);
@@ -355,6 +399,22 @@ const handleDeepLinkPath = (uri?: string) => {
           `settings?theme=${themeName}&authorId=${authorId}&authorName=${authorName}`
         );
       }
+
+      return;
+    }
+
+    if (url.host === "steam-connected") {
+      closeSteamOpenIdWindow();
+      const result = parseSteamOpenIdReturn(uri);
+      if (result?.kind === "error") {
+        notifySteamConnectError(result.code);
+        return;
+      }
+      completeSteamOpenIdConnection({
+        clearReconnectRequired: () =>
+          steamSyncOrchestrator.clearReconnectRequired(),
+        notifyConnected: notifySteamConnected,
+      });
     }
   } catch (error) {
     logger.error("Error handling deep link", uri, error);
@@ -408,23 +468,32 @@ app.on("window-all-closed", () => {
 });
 
 let canAppBeClosed = false;
+let isAppClosing = false;
 
 app.on("before-quit", async (e) => {
-  await Lock.releaseLock();
-
   if (!canAppBeClosed) {
     e.preventDefault();
+    if (isAppClosing) return;
+    isAppClosing = true;
     PowerSaveBlockerManager.reset();
-    /* Disconnects Python RPC */
-    PythonRPC.kill();
-    await clearGamesPlaytime();
+
+    const results = await Promise.allSettled([
+      Lock.releaseLock(),
+      TorrentService.shutdown(),
+      clearGamesPlaytime(),
+      emulators.stopAllEmulatorSouvenirCaptureSessions(),
+    ]);
+    for (const result of results) {
+      if (result.status === "rejected") {
+        logger.error("Application shutdown cleanup failed", result.reason);
+      }
+    }
 
     // Sign out if configured
     const prefs = await db
-      .get<
-        string,
-        UserPreferences
-      >(levelKeys.userPreferences, { valueEncoding: "json" })
+      .get<string, UserPreferences>(levelKeys.userPreferences, {
+        valueEncoding: "json",
+      })
       .catch(() => null);
     if (prefs?.signOutOnExit) {
       const { HydraApi } = await import("./services/hydra-api");
@@ -438,16 +507,25 @@ app.on("before-quit", async (e) => {
     }
     if (prefs?.selfHostedSignOutOnExit && prefs.selfHostedApiUrl) {
       await db
-        .put<
-          string,
-          UserPreferences
-        >(levelKeys.userPreferences, { ...prefs, selfHostedUserToken: null, selfHostedTokenIssuedAt: undefined }, { valueEncoding: "json" })
+        .put<string, UserPreferences>(
+          levelKeys.userPreferences,
+          {
+            ...prefs,
+            selfHostedUserToken: null,
+            selfHostedTokenIssuedAt: undefined,
+          },
+          { valueEncoding: "json" }
+        )
         .catch(() => {});
     }
 
     canAppBeClosed = true;
     app.quit();
   }
+});
+
+app.on("will-quit", () => {
+  logger.info("Application will quit");
 });
 
 app.on("activate", () => {

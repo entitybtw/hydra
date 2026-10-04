@@ -4,6 +4,7 @@ import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { logger } from "./logger";
+import { listArchiveEntries, readArchiveEntry } from "./archive-entry";
 
 export const binaryName = {
   linux: "7zzs",
@@ -32,6 +33,25 @@ export class SevenZip {
         "binaries",
         binaryName[process.platform]
       );
+
+  public static listEntries(filePath: string, signal?: AbortSignal) {
+    return listArchiveEntries(this.binaryPath, filePath, signal);
+  }
+
+  public static readEntry(
+    filePath: string,
+    entryName: string,
+    maxBytes: number,
+    signal?: AbortSignal
+  ) {
+    return readArchiveEntry(
+      this.binaryPath,
+      filePath,
+      entryName,
+      maxBytes,
+      signal
+    );
+  }
 
   private static isPasswordRelatedError(error: unknown): boolean {
     const errorMessage =
@@ -153,11 +173,15 @@ export class SevenZip {
   public static async createZip({
     sourcePath,
     destinationPath,
+    signal,
   }: {
     sourcePath: string;
     destinationPath: string;
+    signal?: AbortSignal;
   }): Promise<void> {
+    signal?.throwIfAborted();
     await fs.promises.mkdir(path.dirname(destinationPath), { recursive: true });
+    signal?.throwIfAborted();
 
     return new Promise((resolve, reject) => {
       const options: CommandLineSwitches = {
@@ -170,14 +194,52 @@ export class SevenZip {
 
       const stream = Seven.add(destinationPath, ".", options);
 
-      stream._childProcess = spawn(stream._bin, stream._args, {
+      const childProcess = spawn(stream._bin, stream._args, {
         cwd: sourcePath,
         windowsHide: true,
       });
+      stream._childProcess = childProcess;
 
-      stream.on("end", resolve);
-      stream.on("error", reject);
+      let settled = false;
+      let abortRequested = false;
+
+      const abortReason = () =>
+        signal?.reason instanceof Error
+          ? signal.reason
+          : new DOMException("ZIP creation aborted", "AbortError");
+
+      const settle = (error?: unknown) => {
+        if (settled) return;
+
+        settled = true;
+        signal?.removeEventListener("abort", onAbort);
+
+        if (error) reject(error);
+        else resolve();
+      };
+
+      const onAbort = () => {
+        if (abortRequested || settled) return;
+
+        abortRequested = true;
+        try {
+          childProcess.kill();
+        } catch (error) {
+          settle(error);
+        }
+      };
+
+      stream.on("end", () =>
+        settle(abortRequested ? abortReason() : undefined)
+      );
+      stream.on("error", (error) =>
+        settle(abortRequested ? abortReason() : error)
+      );
       Seven.listen(stream);
+
+      signal?.addEventListener("abort", onAbort, { once: true });
+
+      if (signal?.aborted) onAbort();
     });
   }
 

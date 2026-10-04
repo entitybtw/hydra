@@ -20,6 +20,9 @@ import {
   RetroAchievementsClient,
   type RetroAchievementsGameInfoAndUserProgress,
 } from "./retro-achievements-client";
+import { AchievementMemoryStore } from "../achievements/achievement-memory-store";
+import { AchievementSouvenirStore } from "../achievements/achievement-souvenir-store";
+import { getAchievementSouvenirs } from "../achievements/get-achievement-souvenirs";
 
 const toMillis = (date?: string) => {
   if (!date) return null;
@@ -34,6 +37,25 @@ const sortAchievements = (a: UserAchievement, b: UserAchievement) => {
     return b.unlockTime! - a.unlockTime!;
   }
   return Number(a.hidden) - Number(b.hidden);
+};
+
+const buildRetroAchievement = (
+  achievementData: SteamAchievement,
+  unlockedByName: Map<string, UnlockedAchievement>,
+  souvenirs: Map<string, string>
+): UserAchievement => {
+  const unlocked = unlockedByName.get(achievementData.name.toUpperCase());
+
+  return {
+    ...achievementData,
+    unlocked: Boolean(unlocked),
+    unlockTime: unlocked?.unlockTime ?? null,
+    hardcoreUnlockTime: unlocked?.hardcoreUnlockTime ?? null,
+    imageUrl: unlocked
+      ? (souvenirs.get(achievementData.name.toUpperCase()) ?? null)
+      : null,
+    source: "retroachievements" as const,
+  };
 };
 
 const buildAchievementsFromCache = async (
@@ -51,22 +73,16 @@ const buildAchievementsFromCache = async (
     unlockedByName.set(unlocked.name.toUpperCase(), unlocked);
   }
 
-  return (cached.achievements ?? [])
-    .map((achievementData) => {
-      const unlocked = unlockedByName.get(achievementData.name.toUpperCase());
+  const souvenirs = await getAchievementSouvenirs(objectId, shop);
 
-      return {
-        ...achievementData,
-        unlocked: Boolean(unlocked),
-        unlockTime: unlocked?.unlockTime ?? null,
-        hardcoreUnlockTime: unlocked?.hardcoreUnlockTime ?? null,
-        source: "retroachievements" as const,
-      };
-    })
+  return (cached.achievements ?? [])
+    .map((achievementData) =>
+      buildRetroAchievement(achievementData, unlockedByName, souvenirs)
+    )
     .sort(sortAchievements);
 };
 
-const resolveRetroAchievementsGameId = async (
+export const resolveRetroAchievementsGameId = async (
   objectId: string,
   shop: GameShop,
   retroAchievementsGameId?: number
@@ -130,20 +146,13 @@ interface RetroAchievementsSyncResult {
 
 const buildRetroAchievementsView = (
   catalogue: SteamAchievement[],
-  unlockedByName: Map<string, UnlockedAchievement>
+  unlockedByName: Map<string, UnlockedAchievement>,
+  souvenirs: Map<string, string>
 ) => {
   return catalogue
-    .map((achievementData) => {
-      const unlocked = unlockedByName.get(achievementData.name.toUpperCase());
-
-      return {
-        ...achievementData,
-        unlocked: Boolean(unlocked),
-        unlockTime: unlocked?.unlockTime ?? null,
-        hardcoreUnlockTime: unlocked?.hardcoreUnlockTime ?? null,
-        source: "retroachievements" as const,
-      };
-    })
+    .map((achievementData) =>
+      buildRetroAchievement(achievementData, unlockedByName, souvenirs)
+    )
     .sort(sortAchievements);
 };
 
@@ -269,7 +278,14 @@ export const syncRetroAchievements = async ({
     }
   }
 
-  const achievements = buildRetroAchievementsView(catalogue, unlockedByName);
+  AchievementSouvenirStore.invalidate(shop, objectId);
+
+  const souvenirs = await getAchievementSouvenirs(objectId, shop);
+  const achievements = buildRetroAchievementsView(
+    catalogue,
+    unlockedByName,
+    souvenirs
+  );
 
   await gameAchievementsSublevel.put(gameKey, {
     achievements: catalogue,
@@ -277,6 +293,15 @@ export const syncRetroAchievements = async ({
     updatedAt: cachedAchievements?.updatedAt,
     language: cachedAchievements?.language,
     catalogueValidator: cachedAchievements?.catalogueValidator,
+  });
+
+  const memoryEntry = AchievementMemoryStore.get(shop, objectId);
+  AchievementMemoryStore.set(shop, objectId, {
+    achievements: catalogue,
+    unlockedAchievements: Array.from(unlockedByName.values()),
+    language: memoryEntry?.language ?? cachedAchievements?.language,
+    catalogueValidator:
+      memoryEntry?.catalogueValidator ?? cachedAchievements?.catalogueValidator,
   });
 
   logger.info("RetroAchievements progress fetched", {

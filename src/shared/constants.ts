@@ -52,6 +52,7 @@ export enum Cracker {
   flt = "FLT",
   rle = "RLE",
   razor1911 = "RAZOR1911",
+  ali213 = "ALI213",
 }
 
 export enum AuthPage {
@@ -80,6 +81,7 @@ export enum DownloadError {
   HosterUnlockLoginRequired = "download_error_hoster_unlock_login_required",
   HosterUnlockFileNotFound = "download_error_hoster_unlock_file_not_found",
   HosterUnlockUnavailable = "download_error_hoster_unlock_unavailable",
+  DownloadLinkReturnedWebPage = "download_error_link_returned_web_page",
   InvalidMagnet = "download_error_invalid_magnet",
   TorrentMetadataTimeout = "download_error_torrent_metadata_timeout",
   TorrentMetadataIncomplete = "download_error_torrent_metadata_incomplete",
@@ -143,3 +145,11 @@ export const getGameExecutableFilters = (
 
 export const GAMEMODE_SITE_URL = "https://github.com/FeralInteractive/gamemode";
 export const MANGOHUD_SITE_URL = "https://github.com/flightlessmango/MangoHud";
+
+export const CLOUD_GIFT_RECEIVED_NOTIFICATION = "CLOUD_GIFT_RECEIVED";
+export const CLOUD_GIFT_STATUS_PENDING_ACCEPTANCE = "PENDING_ACCEPTANCE";
+export const CLOUD_GIFT_ID_VARIABLE = "giftId";
+
+export const NOTIFICATIONS_FETCH_FILTER = "all";
+export const NOTIFICATIONS_FETCH_TAKE = 20;
+export const NOTIFICATIONS_FETCH_SKIP = 0;

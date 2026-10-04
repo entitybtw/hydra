@@ -1,14 +1,22 @@
 import { registerEvent } from "../register-event";
-import { findAchievementFiles } from "@main/services/achievements/find-achievement-files";
+import { collectGameAchievementFiles } from "@main/services/achievements/collect-game-achievement-files";
 import fs from "fs";
 import { achievementsLogger, HydraApi, WindowManager } from "@main/services";
-import { getUnlockedAchievements } from "../user/get-unlocked-achievements";
+import { syncAndGetUnlockedAchievements } from "../user/get-unlocked-achievements";
 import {
   gameAchievementsSublevel,
   gamesSublevel,
   levelKeys,
 } from "@main/level";
 import type { GameShop } from "@types";
+import { AchievementMemoryStore } from "@main/services/achievements/achievement-memory-store";
+import { AchievementSouvenirStore } from "@main/services/achievements/achievement-souvenir-store";
+import {
+  cancelPendingSouvenirsForGame,
+  deleteLocalSouvenirAssetsForGame,
+} from "@main/services/achievements/grouped-souvenir-worker";
+import { AchievementWatcherManager } from "@main/services/achievements/achievement-watcher-manager";
+import { updateGameRecord } from "@main/services/game-record-updater";
 
 const resetGameAchievements = async (
   _event: Electron.IpcMainInvokeEvent,
@@ -21,42 +29,72 @@ const resetGameAchievements = async (
 
     if (!game) return;
 
-    const achievementFiles = findAchievementFiles(game);
+    await cancelPendingSouvenirsForGame(levelKey);
 
-    if (achievementFiles.length) {
-      for (const achievementFile of achievementFiles) {
-        achievementsLogger.log(`deleting ${achievementFile.filePath}`);
-        await fs.promises.rm(achievementFile.filePath);
-      }
+    const achievementFiles = await collectGameAchievementFiles(game, {
+      includeSteamCache: false,
+      awaitGameDirectoryLocations: true,
+    });
+
+    for (const achievementFile of achievementFiles) {
+      achievementsLogger.log(`deleting ${achievementFile.filePath}`);
+
+      await fs.promises.rm(achievementFile.filePath, {
+        force: true,
+        recursive: true,
+      });
     }
 
-    await gameAchievementsSublevel
-      .get(levelKey)
-      .then(async (gameAchievements) => {
+    AchievementWatcherManager.forgetAchievementFiles(
+      levelKey,
+      achievementFiles.map((achievementFile) => achievementFile.filePath)
+    );
+
+    if (game.reportedUnlockedAchievementCount !== undefined) {
+      await updateGameRecord(levelKey, {
+        reportedUnlockedAchievementCount: undefined,
+      });
+    }
+
+    await HydraApi.delete(`/profile/games/achievements/${game.remoteId}`).then(
+      async () => {
+        const gameAchievements = AchievementMemoryStore.get(shop, objectId);
         if (gameAchievements) {
-          await gameAchievementsSublevel.put(levelKey, {
+          AchievementMemoryStore.set(shop, objectId, {
             ...gameAchievements,
             unlockedAchievements: [],
           });
         }
-      });
 
-    await HydraApi.delete(`/profile/games/achievements/${game.remoteId}`).then(
-      () =>
+        // Keep the fork's persisted achievement copy in sync as well
+        await gameAchievementsSublevel
+          .get(levelKey)
+          .then((persisted) =>
+            persisted
+              ? gameAchievementsSublevel.put(levelKey, {
+                  ...persisted,
+                  unlockedAchievements: [],
+                })
+              : undefined
+          )
+          .catch(() => {});
+
+        await deleteLocalSouvenirAssetsForGame(levelKey);
+        AchievementSouvenirStore.invalidate(shop, objectId);
         achievementsLogger.log(
-          `Deleted achievements from ${game.remoteId} - ${game.objectId} - ${game.title}`
-        )
+          `Deleted Hydra achievements from ${game.remoteId} - ${game.objectId} - ${game.title}`
+        );
+      }
     );
 
-    const gameAchievements = await getUnlockedAchievements(
+    const updatedAchievements = await syncAndGetUnlockedAchievements(
       game.objectId,
-      game.shop,
-      true
+      game.shop
     );
 
     WindowManager.mainWindow?.webContents.send(
       `on-update-achievements-${game.objectId}-${game.shop}`,
-      gameAchievements
+      updatedAchievements
     );
   } catch (error) {
     achievementsLogger.error(error);

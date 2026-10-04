@@ -49,12 +49,16 @@ export interface Game {
   customOriginalHeroPath?: string | null;
   customOriginalCoverPath?: string | null;
   playTimeInMilliseconds: number;
+  steamPlayTimeInMilliseconds?: number;
+  hasActiveSteamImport?: boolean;
+  enableHydraPlaytimeTracking?: boolean;
   unsyncedDeltaPlayTimeInMilliseconds?: number;
   lastTimePlayed: Date | null;
   addedToLibraryAt?: Date | null;
   objectId: string;
   shop: GameShop;
   remoteId: string | null;
+  source?: "hydra" | "steam";
   collectionIds?: string[];
   isDeleted: boolean;
   winePrefixPath?: string | null;
@@ -67,9 +71,12 @@ export interface Game {
   autoRunMangohud?: boolean | null;
   autoRunGamemode?: boolean | null;
   favorite?: boolean;
+  isHiddenFromOthers?: boolean;
+  isConcealed?: boolean;
   isPinned?: boolean;
   achievementCount?: number;
   unlockedAchievementCount?: number;
+  reportedUnlockedAchievementCount?: number;
   pinnedDate?: Date | null;
   automaticCloudSync?: boolean;
   hasManuallyUpdatedPlaytime?: boolean;
@@ -83,6 +90,7 @@ export interface Game {
   dontAskDiscSelection?: boolean;
   romSizeBytes?: number | null;
   launchViaSteam?: boolean | null;
+  cloudSavesVersion?: "v1" | "v2" | null;
 }
 
 export interface Download {
@@ -162,6 +170,7 @@ export interface UserPreferences {
   runAtStartup?: boolean;
   startMinimized?: boolean;
   launchToLibraryPage?: boolean;
+  bigPictureLaunchToLibraryPage?: boolean;
   launchInBigPicture?: boolean;
   disableNsfwAlert?: boolean;
   enableAutoInstall?: boolean;
@@ -180,6 +189,8 @@ export interface UserPreferences {
   extractFilesByDefault?: boolean;
   deleteArchiveFilesAfterExtractionByDefault?: boolean;
   enableSteamAchievements?: boolean;
+  enableAchievementSouvenirs?: boolean;
+  achievementScreenshotsPath?: string;
   autoplayGameTrailers?: boolean;
   hideToTrayOnGameStart?: boolean;
   enableNewDownloadOptionsBadges?: boolean;
@@ -215,6 +226,13 @@ export interface UserPreferences {
   cloudSavesVersion?: "v1" | "v2";
   steamGridDbApiKey?: string | null;
   steamGridDbMode?: "hydra" | "custom";
+  hideLibraryGameBadges?: boolean;
+  hideLibraryReadySizeBadges?: boolean;
+  hideLibraryClassicsBadges?: boolean;
+  hideSteamLibraryBadges?: boolean;
+  hideLibraryAchievementProgress?: boolean;
+  autoplayAnimatedArtwork?: boolean;
+  persistFiltersAndSorting?: boolean;
 }
 
 export interface NetworkInterface {

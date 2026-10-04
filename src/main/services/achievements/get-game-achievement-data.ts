@@ -3,6 +3,7 @@ import type { GameShop, SteamAchievement } from "@types";
 import { UserNotLoggedInError } from "@shared";
 import { logger } from "../logger";
 import { db, gameAchievementsSublevel, levelKeys } from "@main/level";
+import { AchievementMemoryStore } from "./achievement-memory-store";
 
 export const getGameAchievementData = async (
   objectId: string,
@@ -48,18 +49,37 @@ export const getGameAchievementData = async (
         return cachedAchievements?.achievements ?? [];
       }
 
+      const achievements =
+        response.data.length > 0
+          ? response.data
+          : (cachedAchievements?.achievements ?? []);
+
+      const unlockedAchievements =
+        cachedAchievements?.unlockedAchievements ?? [];
+      const catalogueValidator =
+        typeof response.headers.etag === "string"
+          ? response.headers.etag
+          : undefined;
+
       await gameAchievementsSublevel.put(gameKey, {
-        unlockedAchievements: cachedAchievements?.unlockedAchievements ?? [],
-        achievements: response.data,
+        unlockedAchievements,
+        achievements,
         updatedAt: Date.now(),
         language,
-        catalogueValidator:
-          typeof response.headers.etag === "string"
-            ? response.headers.etag
-            : undefined,
+        catalogueValidator,
       });
 
-      return response.data;
+      const memoryEntry = AchievementMemoryStore.get(shop, objectId);
+      AchievementMemoryStore.set(shop, objectId, {
+        achievements,
+        unlockedAchievements:
+          memoryEntry?.unlockedAchievements ?? unlockedAchievements,
+        language,
+        catalogueValidator:
+          memoryEntry?.catalogueValidator ?? catalogueValidator,
+      });
+
+      return achievements;
     })
     .catch((err) => {
       if (err instanceof UserNotLoggedInError) {

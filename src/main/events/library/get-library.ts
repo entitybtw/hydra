@@ -14,6 +14,12 @@ import {
 import { composeAssetsWithArtwork } from "@shared";
 import { getGameAssets } from "../catalogue/get-game-assets";
 import { WindowManager } from "@main/services";
+import { HydraApi } from "@main/services/hydra-api";
+import { belongsToLibraryCollection } from "@main/services/library-sync/game-visibility";
+import {
+  resolveAchievementCount,
+  resolveUnlockedAchievementCount,
+} from "@main/services/achievements/achievement-memory-store";
 
 const PREFETCH_CONCURRENCY = 5;
 const LOCAL_CACHE_EXPIRATION = 1000 * 60 * 60 * 8;
@@ -71,13 +77,15 @@ const batchPrefetchAssets = async (
   WindowManager.sendToAppWindows("on-library-batch-complete");
 };
 
-const getLibrary = async (): Promise<LibraryGame[]> => {
+const getLibrary = async (
+  collection: "visible" | "hidden" | "all" = "visible"
+): Promise<LibraryGame[]> => {
   const results = await gamesSublevel.iterator().all();
   const pendingFetch: { key: string; shop: GameShop; objectId: string }[] = [];
 
   const library = await Promise.all(
     results
-      .filter(([_key, game]) => game.isDeleted === false)
+      .filter(([_key, game]) => belongsToLibraryCollection(game, collection))
       .map(async ([key, game]) => {
         const download = await downloadsSublevel.get(key);
         const gameAssets = await gamesShopAssetsSublevel.get(key);
@@ -102,8 +110,19 @@ const getLibrary = async (): Promise<LibraryGame[]> => {
               validAchievementNames.has((unlocked.name ?? "").toUpperCase()) &&
               unlocked.unlockTime > 0
           ).length ??
-          game.unlockedAchievementCount ??
-          0;
+          resolveUnlockedAchievementCount(
+            game.shop,
+            game.objectId,
+            game.unlockedAchievementCount
+          );
+
+        const achievementCount =
+          achievements?.achievements?.length ||
+          resolveAchievementCount(
+            game.shop,
+            game.objectId,
+            game.achievementCount
+          );
 
         // Verify installer still exists, clear if deleted externally
         let installerSizeInBytes = game.installerSizeInBytes;
@@ -166,7 +185,7 @@ const getLibrary = async (): Promise<LibraryGame[]> => {
           installedSizeInBytes,
           download: download ?? null,
           unlockedAchievementCount,
-          achievementCount: game.achievementCount ?? 0,
+          achievementCount,
           // Spread composed assets last to ensure all image URLs are properly set
           ...composedAssets,
           title: composedAssets?.title || game.title,
@@ -185,4 +204,9 @@ const getLibrary = async (): Promise<LibraryGame[]> => {
   return library;
 };
 
-registerEvent("getLibrary", getLibrary);
+registerEvent("getLibrary", (_event, includeConcealed = false) =>
+  getLibrary(includeConcealed ? "all" : "visible")
+);
+registerEvent("getHiddenLibrary", () =>
+  HydraApi.isLoggedIn() ? getLibrary("hidden") : Promise.resolve([])
+);

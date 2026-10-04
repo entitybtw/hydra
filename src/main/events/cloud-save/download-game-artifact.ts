@@ -1,4 +1,4 @@
-import { CloudSync, HydraApi, logger, WindowManager, Wine } from "@main/services";
+import { CloudSync, logger, WindowManager, Wine } from "@main/services";
 import fs from "node:fs";
 import * as tar from "tar";
 import { registerEvent } from "../register-event";
@@ -11,6 +11,7 @@ import YAML from "yaml";
 import { addTrailingSlash, normalizePath } from "@main/helpers";
 import { SystemPath } from "@main/services/system-path";
 import { gamesSublevel, levelKeys } from "@main/level";
+import { requestGameArtifactDownload } from "./game-artifact-download";
 
 export const transformLudusaviBackupPathIntoWindowsPath = (
   backupPath: string,
@@ -137,12 +138,7 @@ const downloadGameArtifact = async (
       objectId
     );
 
-    const artifactInfo = await HydraApi.post<{
-      downloadUrl: string;
-      objectKey: string;
-      homeDir: string;
-      winePrefixPath: string | null;
-    }>(`/profile/games/artifacts/${gameArtifactId}/download`);
+    const artifactInfo = await requestGameArtifactDownload(gameArtifactId);
 
     if (!artifactInfo) throw new Error("Failed to get download URL");
 

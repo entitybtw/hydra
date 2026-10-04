@@ -1,4 +1,5 @@
 import type { GameShop } from "@types";
+import { getCloudSaveEmulatorProvider } from "../../../../shared/cloud-save-emulator-provider.js";
 
 export type CloudSaveUiMode = "legacy" | "v2";
 export type LegacyCloudSavePurpose = "active" | "archive";
@@ -26,6 +27,7 @@ export const isLegacyCloudSaveSettingsAvailable = (
 
 export const getCloudSaveVisibility = (
   shop: GameShop,
+  platform?: string | null,
   cloudSavesVersion: CloudSavesVersion = "v2",
   selfHosted = false
 ): CloudSaveVisibility => {
@@ -52,6 +54,16 @@ export const getCloudSaveVisibility = (
   }
 
   if (shop === "launchbox") {
+    if (getCloudSaveEmulatorProvider(shop, platform)) {
+      return {
+        hero: "v2",
+        settings: {
+          showV2: true,
+          showLegacy: true,
+          legacyPurpose: "archive",
+        },
+      };
+    }
     return {
       hero: "legacy",
       settings: {

@@ -30,6 +30,7 @@ import {
   hydrateRetroArchScan,
   setExtractionProgress,
   setGameRunning,
+  setLibrarySyncingRemote,
   setProfileBackground,
   setUserDetails,
   setUserPreferences,
@@ -45,6 +46,7 @@ import { CloudSubscriptionModal } from "./pages/shared-modals/hydra-cloud/cloud-
 import { AddFriendModal } from "./pages/profile/profile-content/add-friend-modal";
 import { ClassicsScanModal } from "./pages/settings/emulation/classics-scan-modal";
 import { RetroArchScanModal } from "./pages/settings/emulation/retroarch-scan-modal";
+import { CloudGiftNotificationModal } from "./pages/shared-modals/cloud-gift-notification-modal";
 
 import type { UserPreferences } from "@types";
 import "./app.scss";
@@ -69,7 +71,7 @@ type WorkWondersWithKnowledge = WorkWonders & {
 
 export function App() {
   const contentRef = useRef<HTMLDivElement>(null);
-  const { updateLibrary, library } = useLibrary();
+  const { updateLibrary, library, downloadLibrary } = useLibrary();
 
   // Listen for new download options updates
   useDownloadOptionsListener();
@@ -172,12 +174,14 @@ export function App() {
   useEffect(() => {
     if (!lastPacket?.gameId) return;
 
-    const activeGame = library.find((game) => game.id === lastPacket.gameId);
+    const activeGame = downloadLibrary.find(
+      (game) => game.id === lastPacket.gameId
+    );
 
     if (!activeGame || activeGame.download?.status !== "active") {
       clearDownload();
     }
-  }, [clearDownload, lastPacket?.gameId, library]);
+  }, [clearDownload, lastPacket?.gameId, downloadLibrary]);
 
   const setupWorkWonders = useCallback(
     async (token?: string, locale?: string) => {
@@ -234,7 +238,11 @@ export function App() {
           "install-pcsx2": 6192,
           "install-rpcs3": 6510,
           "install-retroarch": 7108,
+          "install-ppsspp": 7315,
+          "install-dolphin": 7268,
+          "wii-saves": 7384,
           "retroachievements-emulators": 6629,
+          "downloading-metadata": 7719,
         },
         en: {
           "cannot-write-directory": 4122,
@@ -245,21 +253,33 @@ export function App() {
           "install-pcsx2": 6390,
           "install-rpcs3": 6524,
           "install-retroarch": 7120,
+          "install-ppsspp": 7328,
+          "install-dolphin": 7281,
+          "wii-saves": 7406,
           "retroachievements-emulators": 6692,
+          "downloading-metadata": 7773,
         },
         ru: {
           "install-duckstation": 6479,
           "install-pcsx2": 6429,
           "install-rpcs3": 6541,
           "install-retroarch": 7135,
+          "install-ppsspp": 7338,
+          "install-dolphin": 7292,
+          "wii-saves": 7422,
           "retroachievements-emulators": 6717,
+          "downloading-metadata": 7848,
         },
         es: {
           "install-duckstation": 6492,
           "install-pcsx2": 6410,
           "install-rpcs3": 6552,
           "install-retroarch": 7142,
+          "install-ppsspp": 7375,
+          "install-dolphin": 7303,
+          "wii-saves": 7431,
           "retroachievements-emulators": 6743,
+          "downloading-metadata": 7854,
         },
       };
 
@@ -427,6 +447,27 @@ export function App() {
   }, [dispatch, updateLibrary]);
 
   useEffect(() => {
+    let hasReceivedSyncState = false;
+
+    void window.electron.getRemoteLibrarySyncState().then((syncing) => {
+      if (!hasReceivedSyncState) dispatch(setLibrarySyncingRemote(syncing));
+    });
+
+    return window.electron.onRemoteLibrarySyncStateChange((syncing) => {
+      hasReceivedSyncState = true;
+
+      if (syncing) {
+        dispatch(setLibrarySyncingRemote(true));
+        return;
+      }
+
+      void updateLibrary().finally(() =>
+        dispatch(setLibrarySyncingRemote(false))
+      );
+    });
+  }, [dispatch, updateLibrary]);
+
+  useEffect(() => {
     const listeners = [
       window.electron.onSignIn(onSignIn),
       window.electron.onLibraryBatchComplete(() => {
@@ -443,12 +484,38 @@ export function App() {
         dispatch(clearExtraction());
         updateLibrary();
       }),
-      window.electron.onExtractionFailed(() => {
+      window.electron.onExtractionFailed((_shop, _objectId, failure) => {
         dispatch(clearExtraction());
         updateLibrary();
+
+        if (failure?.reason === "unsupported-format") {
+          showErrorToast(
+            t("extraction_unsupported_format_title", { ns: "downloads" }),
+            t("extraction_unsupported_format_description", {
+              ns: "downloads",
+              format: failure.format,
+            })
+          );
+          return;
+        }
+
+        if (failure?.reason === "file-not-found") {
+          showErrorToast(
+            t("extraction_file_not_found_title", { ns: "downloads" }),
+            t("extraction_file_not_found_description", { ns: "downloads" })
+          );
+          return;
+        }
+
         showErrorToast(
           t("extraction_failed_title", { ns: "downloads" }),
           t("extraction_failed_description", { ns: "downloads" })
+        );
+      }),
+      window.electron.onGameExecutableNotFound(() => {
+        showErrorToast(
+          t("executable_not_found_title", { ns: "game_details" }),
+          t("executable_not_found_description", { ns: "game_details" })
         );
       }),
       window.electron.onDownloadHalted((gameTitle) => {
@@ -664,6 +731,8 @@ export function App() {
         onClose={hideHydraCloudModal}
         feature={hydraCloudFeature || undefined}
       />
+
+      <CloudGiftNotificationModal />
 
       <ArchiveDeletionModal
         visible={showArchiveDeletionModal}

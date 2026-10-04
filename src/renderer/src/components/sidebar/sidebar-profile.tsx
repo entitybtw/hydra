@@ -7,11 +7,13 @@ import {
   SignOutIcon,
 } from "@primer/octicons-react";
 import { useAppSelector, useToast, useUserDetails } from "@renderer/hooks";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SteamLogo from "@renderer/assets/steam-logo.svg?react";
 import { Avatar } from "../avatar/avatar";
+import { ConfirmationModal } from "../confirmation-modal/confirmation-modal";
 import { AuthPage } from "@shared";
+import { platformToSystem } from "@renderer/helpers";
 import { logger } from "@renderer/logger";
 import type {
   NotificationCountResponse,
@@ -80,29 +82,20 @@ const CLASSIC_DISC_OVERLAY = (
 );
 
 interface ClassicGameDiscProps {
-  coverImageUrl?: string | null;
   iconUrl: string | null;
 }
 
-function ClassicGameDisc({
-  coverImageUrl,
-  iconUrl,
-}: Readonly<ClassicGameDiscProps>) {
-  const artworkSources = [coverImageUrl, iconUrl].filter(
-    (source, index, sources): source is string =>
-      Boolean(source) && sources.indexOf(source) === index
-  );
-  const [artworkIndex, setArtworkIndex] = useState(0);
-  const artworkUrl = artworkSources[artworkIndex];
+function ClassicGameDisc({ iconUrl }: Readonly<ClassicGameDiscProps>) {
+  const [hasArtworkError, setHasArtworkError] = useState(false);
 
   return (
     <span className="sidebar-profile__classic-disc" aria-hidden="true">
-      {artworkUrl ? (
+      {iconUrl && !hasArtworkError ? (
         <img
           className="sidebar-profile__classic-disc-artwork"
-          src={artworkUrl}
+          src={iconUrl}
           alt=""
-          onError={() => setArtworkIndex((index) => index + 1)}
+          onError={() => setHasArtworkError(true)}
         />
       ) : null}
       {CLASSIC_DISC_OVERLAY}
@@ -132,11 +125,25 @@ export function SidebarProfile() {
   } | null>(null);
   const [officialDropdownOpen, setOfficialDropdownOpen] = useState(false);
 
+  const library = useAppSelector((state) => state.library.value);
+
+  const isPlayStationGameRunning = useMemo(() => {
+    if (gameRunning?.shop !== "launchbox") return false;
+
+    const runningGame = library.find(
+      (game) =>
+        game.shop === gameRunning.shop && game.objectId === gameRunning.objectId
+    );
+
+    return platformToSystem(runningGame?.platform) !== null;
+  }, [gameRunning, library]);
+
   const [notificationCount, setNotificationCount] = useState(0);
   const [onlineFriendsCount, setOnlineFriendsCount] = useState(0);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isDropdownClosing, setIsDropdownClosing] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
 
   const apiNotificationCountRef = useRef(0);
   const hasFetchedInitialCount = useRef(false);
@@ -350,9 +357,13 @@ export function SidebarProfile() {
     globalThis.window.electron.openFriendsWindow();
   };
 
+  const handleSignOutClick = () => {
+    closeDropdown();
+    setShowSignOutModal(true);
+  };
+
   const handleSignOut = async () => {
     setIsSigningOut(true);
-    closeDropdown();
     try {
       if (isSelfHosted && userPreferences?.selfHostedUserToken) {
         await window.electron.updateUserPreferences({
@@ -364,6 +375,7 @@ export function SidebarProfile() {
       showSuccessToast(t("user_profile:successfully_signed_out"));
     } finally {
       setIsSigningOut(false);
+      setShowSignOutModal(false);
     }
     navigate("/");
   };
@@ -371,12 +383,11 @@ export function SidebarProfile() {
   const gameRunningDetails = () => {
     if (!userDetails || !gameRunning) return null;
 
-    if (gameRunning.shop === "launchbox") {
+    if (isPlayStationGameRunning) {
       return (
         <ClassicGameDisc
           key={`${gameRunning.shop}:${gameRunning.objectId}`}
-          coverImageUrl={gameRunning.coverImageUrl}
-          iconUrl={gameRunning.iconUrl}
+          iconUrl={gameRunning.customIconUrl ?? gameRunning.iconUrl}
         />
       );
     }
@@ -519,7 +530,7 @@ export function SidebarProfile() {
           <button
             type="button"
             className="sidebar-profile__dropdown-item sidebar-profile__dropdown-item--danger"
-            onClick={handleSignOut}
+            onClick={handleSignOutClick}
             disabled={isSigningOut}
           >
             <SignOutIcon size={16} />
@@ -527,6 +538,18 @@ export function SidebarProfile() {
           </button>
         </div>
       )}
+
+      <ConfirmationModal
+        visible={showSignOutModal}
+        title={t("user_profile:sign_out_modal_title")}
+        descriptionText={t("user_profile:sign_out_modal_text")}
+        confirmButtonLabel={t("user_profile:sign_out")}
+        cancelButtonLabel={t("user_profile:cancel")}
+        confirmButtonTheme="danger"
+        buttonsIsDisabled={isSigningOut}
+        onConfirm={() => void handleSignOut()}
+        onClose={() => setShowSignOutModal(false)}
+      />
     </div>
   );
 }

@@ -1,15 +1,20 @@
 import SteamLogo from "@renderer/assets/steam-logo.svg?react";
-import PlayLogo from "@renderer/assets/play-logo.svg?react";
 import HydraIcon from "@renderer/assets/hydra-icon.svg?react";
 import { LibraryGame } from "@types";
 import cn from "classnames";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ConfirmationModal, GameContextMenu, useGameActions } from "..";
+import {
+  ConfirmationModal,
+  GameContextMenu,
+  SteamLibraryBadge,
+  useGameActions,
+} from "..";
 import { HeartFillIcon, PinIcon } from "@primer/octicons-react";
 import { useAppSelector, useToast } from "@renderer/hooks";
 import { useCollectionContextMenu } from "@renderer/context";
+import { shouldShowSteamLibraryBadge } from "@renderer/helpers";
 
 interface SidebarGameItemProps {
   game: LibraryGame;
@@ -67,7 +72,7 @@ export function SidebarGameItem({
   // Determine fallback icon based on game type
   const getFallbackIcon = () => {
     if (isCustomGame) {
-      return <PlayLogo className="sidebar__game-icon" />;
+      return null;
     }
     return <SteamLogo className="sidebar__game-icon" />;
   };
@@ -92,14 +97,25 @@ export function SidebarGameItem({
                 void handlePlayGame();
               } else {
                 showWarningToast(
-                  t("game_has_no_executable", { ns: "translation" })
+                  game.shop === "launchbox"
+                    ? t("game_has_no_disc_hint", {
+                        ns: "sidebar",
+                        options: t("options"),
+                        settings: t("settings", { ns: "sidebar" }),
+                        emulation: t("emulation", { ns: "settings" }),
+                      })
+                    : t("game_has_no_executable_hint", {
+                        ns: "sidebar",
+                        options: t("options"),
+                        locations: t("settings_category_locations"),
+                      })
                 );
               }
             }
           }}
           onContextMenu={handleContextMenu}
         >
-          <div className="sidebar__game-icon-wrapper">
+          <span className="sidebar__game-icon-container">
             {sidebarIcon ? (
               <img
                 className="sidebar__game-icon"
@@ -117,7 +133,11 @@ export function SidebarGameItem({
             {isPirated && !isSteamSynced && (
               <HydraIcon className="sidebar__game-source-badge sidebar__game-source-badge--hydra" />
             )}
-          </div>
+            {shouldShowSteamLibraryBadge(
+              game,
+              userPreferences?.hideSteamLibraryBadges
+            ) && <SteamLibraryBadge variant="sidebar" />}
+          </span>
 
           <span className="sidebar__menu-item-button-label">
             {getGameTitle(game)}

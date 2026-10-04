@@ -8,10 +8,11 @@ import { GridFocusGroup } from "../grid-focus-group";
 import { NavigationLayer } from "../navigation-layer";
 import { FocusRegionContext } from "../../context";
 import { IS_BROWSER } from "../../../constants";
+import { isPhysicalKeyboardFocus } from "../../../helpers/physical-keyboard-focus";
 import type { FocusDirection, FocusOverrides } from "../../../services";
 import {
   GAMEPAD_REPEAT_INITIAL_DELAY,
-  getAcceleratedGamepadRepeatInterval,
+  getGamepadRepeatInterval,
 } from "../../../helpers";
 import {
   useGamepad,
@@ -375,6 +376,17 @@ function isEditableTarget(element: Element | null): element is EditableTarget {
   return element.isContentEditable;
 }
 
+function isPhysicalTypingEvent(event: KeyboardEvent) {
+  if (!event.isTrusted) return false;
+  if (event.ctrlKey || event.metaKey || event.altKey) return false;
+
+  return (
+    event.key.length === 1 ||
+    event.key === "Backspace" ||
+    event.key === "Delete"
+  );
+}
+
 function focusEditableTarget(target: EditableTarget) {
   try {
     target.focus({ preventScroll: true });
@@ -630,7 +642,6 @@ function useAcceleratedHoldAction({
   useEffect(() => {
     if (!enabled || !isPressed) return;
 
-    let repeatCount = 0;
     let timerId: number | null = null;
 
     const clearTimer = () => {
@@ -644,9 +655,7 @@ function useAcceleratedHoldAction({
       timerId = globalThis.window.setTimeout(() => {
         onActionRef.current();
 
-        const nextDelay = getAcceleratedGamepadRepeatInterval(repeatCount);
-        repeatCount += 1;
-        scheduleRepeat(nextDelay);
+        scheduleRepeat(getGamepadRepeatInterval());
       }, delay);
     };
 
@@ -669,6 +678,9 @@ export function VirtualKeyboardProvider() {
   const { setFocus } = useNavigationActions();
   const setVirtualKeyboardTarget = useVirtualKeyboardStore(
     (state) => state.setTarget
+  );
+  const setOpenVirtualKeyboard = useVirtualKeyboardStore(
+    (state) => state.setOpenKeyboard
   );
   const setCloseVirtualKeyboard = useVirtualKeyboardStore(
     (state) => state.setCloseKeyboard
@@ -1075,15 +1087,12 @@ export function VirtualKeyboardProvider() {
   useEffect(() => {
     if (!IS_BROWSER) return;
 
-    const handleFocusIn = (event: FocusEvent) => {
-      const nextTarget = event.target instanceof Element ? event.target : null;
-
+    const openKeyboard = (nextTarget: HTMLElement) => {
       if (!isEditableTarget(nextTarget)) return;
       if (!isVirtualKeyboardEnabled) return;
       if (useInputModeStore.getState().mode !== "gamepad") return;
 
-      if (suppressedTargetRef.current === nextTarget) return;
-
+      suppressedTargetRef.current = null;
       const isNewTarget = activeTargetRef.current !== nextTarget;
 
       activeTargetRef.current = nextTarget;
@@ -1097,6 +1106,13 @@ export function VirtualKeyboardProvider() {
       }
 
       setTarget(nextTarget);
+    };
+
+    const handleFocusIn = (event: FocusEvent) => {
+      if (!(event.target instanceof HTMLElement)) return;
+      if (isPhysicalKeyboardFocus(event.target)) return;
+      if (suppressedTargetRef.current === event.target) return;
+      openKeyboard(event.target);
     };
 
     const handleFocusOut = (event: FocusEvent) => {
@@ -1133,6 +1149,7 @@ export function VirtualKeyboardProvider() {
       });
     };
 
+    setOpenVirtualKeyboard(openKeyboard);
     globalThis.window.addEventListener("focusin", handleFocusIn);
     globalThis.window.addEventListener("focusout", handleFocusOut);
 
@@ -1142,10 +1159,16 @@ export function VirtualKeyboardProvider() {
         focusOutFrameRef.current = null;
       }
 
+      setOpenVirtualKeyboard(null);
       globalThis.window.removeEventListener("focusin", handleFocusIn);
       globalThis.window.removeEventListener("focusout", handleFocusOut);
     };
-  }, [closeKeyboard, isVirtualKeyboardEnabled, setVirtualKeyboardTarget]);
+  }, [
+    closeKeyboard,
+    isVirtualKeyboardEnabled,
+    setVirtualKeyboardTarget,
+    setOpenVirtualKeyboard,
+  ]);
 
   useEffect(() => {
     if (!IS_BROWSER || !target) return;
@@ -1198,6 +1221,11 @@ export function VirtualKeyboardProvider() {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
+        closeKeyboard();
+        return;
+      }
+
+      if (isPhysicalTypingEvent(event)) {
         closeKeyboard();
       }
     };

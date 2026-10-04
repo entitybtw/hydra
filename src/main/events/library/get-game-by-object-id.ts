@@ -6,6 +6,10 @@ import {
   levelKeys,
 } from "@main/level";
 import type { GameShop } from "@types";
+import {
+  resolveAchievementCount,
+  resolveUnlockedAchievementCount,
+} from "@main/services/achievements/achievement-memory-store";
 import { lookupCachedPlatform } from "./get-library";
 
 const getGameByObjectId = async (
@@ -40,10 +44,23 @@ const getGameByObjectId = async (
         validAchievementNames.has((unlocked.name ?? "").toUpperCase()) &&
         unlocked.unlockTime > 0
     ).length ??
-    game.unlockedAchievementCount ??
-    0;
+    resolveUnlockedAchievementCount(
+      shop,
+      objectId,
+      game.unlockedAchievementCount
+    );
 
-  return { ...game, id: gameKey, download, unlockedAchievementCount };
+  const achievementCount =
+    achievements?.achievements?.length ||
+    resolveAchievementCount(shop, objectId, game.achievementCount);
+
+  return {
+    ...game,
+    id: gameKey,
+    download,
+    unlockedAchievementCount,
+    achievementCount,
+  };
 };
 
 registerEvent("getGameByObjectId", getGameByObjectId);

@@ -13,6 +13,8 @@ import {
   da,
   el,
   vi,
+  ja,
+  sl,
 } from "date-fns/locale";
 
 import { isArchiveOrgFileUri } from "./archive-org";
@@ -23,15 +25,30 @@ import { AchievementNotificationInfo, GameRepack } from "@types";
 
 export * from "./archive-org";
 export * from "./constants";
+export {
+  shouldAutoStartSteamSync,
+  type SteamAutoStartRunStatus,
+} from "./should-auto-start-steam-sync";
+export * from "./steam-session";
+export * from "./window-layout";
+export {
+  getDisplayedPlayTimeInMilliseconds,
+  getPlayTimeHoursAndMinutes,
+  mergeLocalAndRemotePlayTime,
+} from "./playtime";
 export * from "./cloud-save-access";
+export * from "./cloud-save-emulator-provider";
 export * from "./controller-support";
 export * from "./artwork-resolver";
 export * from "./download-directories";
 export * from "./html-sanitizer";
 export * from "./language-flags";
 export * from "./use-hls-video";
+export * from "./use-souvenir-content-warning";
 export * from "./retroarch-platform";
 export * from "./tracker-list";
+export * from "./souvenirs";
+export * from "./souvenir-sync";
 
 export class UserNotLoggedInError extends Error {
   constructor() {
@@ -195,6 +212,15 @@ export const getDownloadersForUris = (uris: string[]) => {
   return Array.from(downloadersSet);
 };
 
+export const filterDownloadableRepacks = <T extends Pick<GameRepack, "uris">>(
+  repacks: T[]
+) =>
+  repacks.filter(
+    (repack) =>
+      Array.isArray(repack.uris) &&
+      getDownloadersForUris(repack.uris).length > 0
+  );
+
 const AVAILABILITY_CHECK_DOWNLOADERS = new Set<Downloader>([
   Downloader.VikingFile,
 ]);
@@ -285,6 +311,8 @@ export const getDateLocale = (language: string) => {
   if (language.startsWith("da")) return da;
   if (language.startsWith("el")) return el;
   if (language.startsWith("vi")) return vi;
+  if (language.startsWith("ja")) return ja;
+  if (language.startsWith("sl")) return sl;
 
   return enUS;
 };
@@ -321,3 +349,4 @@ export const generateAchievementCustomNotificationTest = (
     isPlatinum: options.isPlatinum ?? false,
   };
 };
+export * from "./emulator-systems";
